@@ -1,0 +1,500 @@
+---
+title: "Health-Related Social Influence Strategies in Overweight Romantic Couples: Daily Associations with Physical Activity and Affect for Targets and Actors "
+author: "Pascal Küng, MSc (ORCID: 0000-0001-7346-9414), Corina Berli, PhD (ORCID: 0000-0002-5078-3539), Patrick S. Höhener, MSc (ORCID: 0000-0003-3635-2799), Robert Tobias, PhD (ORCID: 0000-0001-7972-122X), Urte Scholz, PhD (ORCID: 0000-0003-0184-5921)"
+date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    df_print: kable
+    toc: yes
+    toc_float: yes
+    code_folding: show
+    toc_depth: 5
+---
+
+
+
+# Setup and loading
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(dplyr.print_max = 100)
+
+df <- readRDS(file = 'DataSet_Subset.rds')
+
+```
+
+```{r loading, results='hide'}
+# load packages
+
+library(ggplot2)
+library(nlme)
+library(MASS)
+library(haven)
+library(scales)
+library(cowplot)
+library(devtools)
+library(ggResidpanel)
+library(glmmTMB)
+library(DHARMa)
+library(ggeffects)
+library(broom.mixed)
+library(easystats)
+library(Hmisc)
+library(bmlm)
+library(tidyverse)
+library(wbCorr)
+
+
+```
+
+
+
+```{r}
+# Date of diary days
+range(df$sbwdat01, na.rm = T)
+
+```
+
+# Data wrangling
+
+## centering predictors
+
+```{r centering}
+
+df <- df %>% 
+  mutate(MVPA_target = ifelse(sbwwear > 10, sbwmvpa01, NA),
+         MVPA_agent = ifelse(pbwwear > 10, pbwmvpa01, NA)
+         )
+
+# centring by using the isolate function
+df <- isolate(df, by = 'CoupleID',
+            c('MVPA_agent', 'MVPA_target', 'Paff_agent', 'Naff_agent', 'Paff_target', 'Naff_target'),
+            which='both')
+
+  
+```
+
+
+## Introducing Lagged Variables
+
+```{r}
+
+df <- df %>%
+  group_by(CoupleID) %>%
+  mutate(
+    PSC_agent_next_day = Lag(PSC_agent, -1),
+    NSC_agent_next_day = Lag(NSC_agent, -1)
+  ) %>%
+  ungroup()
+
+# Check if it is correct
+head(df[ , c("CoupleID", "PSC_agent", "PSC_agent_next_day")])
+
+```
+
+
+# Modelling
+
+```{r}
+# Defining common elements
+common_within_person_effects <- c(
+  '(Intercept)',
+  '---WITHIN-PERSON EFFECTS---',
+  'MVPA_agent_cw', 
+  'MVPA_target_cw', 
+  'Paff_agent_cw', 
+  'Paff_target_cw',
+  'Naff_agent_cw', 
+  'Naff_target_cw'
+)
+
+common_between_person_effects <- c(
+  'MVPA_agent_cb', 
+  'MVPA_target_cb', 
+  'Paff_agent_cb', 
+  'Paff_target_cb',
+  'Naff_agent_cb', 
+  'Naff_target_cb', 
+  '---PREVIOUS-DAY-PREDICTORS---',
+  'PSC_agent', 
+  'NSC_agent'
+)
+
+common_random_effects <- c(
+  'Std.Dev.(Intercept)|CoupleID'
+)
+
+common_model_info <- c(
+  'Within-group standard error', 
+  'AR1'
+)
+
+# Order for report
+order_rep <- c(
+  common_within_person_effects, 
+  '---BETWEEN-PERSON EFFECTS---',
+  common_between_person_effects, 
+  '---RANDOM-EFFECTS---',
+  common_random_effects,
+  '---------MODEL INFO---------',
+  common_model_info
+)
+
+# The report_nlme and report_glmmTMB functions can remain the same
+
+full_report <- function(model, order) {
+  if (class(model) == 'glmmTMB') {
+    return(report_glmmTMB(model, order))
+  } else {
+    return(report_nlme(model, order))
+  }
+}
+
+
+report_glmmTMB <- function(model, order) {
+  # Extracting model parameters and creating the initial dataframe
+  rep_df <- as.data.frame(model_parameters(model, exponentiate = TRUE))[,c('Parameter', 'Coefficient', 'SE', 'p', 'CI_low', 'CI_high', 'Effects', 'Component')]
+  
+  # Removing rows where the Parameter includes 'factor'
+  rep_df <- rep_df[rep_df$Effects != 'random',]
+  
+  
+  # Adding confidence intervals
+  
+  int <- as.data.frame(confint(model))
+  
+  intt <- int[!grepl('factor', rownames(int)),]
+  intervals <- intt[grepl('CoupleID', rownames(intt)),]
+  
+  
+  df_intervals <- data.frame('Parameter' = rownames(intervals),
+                             'Coefficient' = intervals$Estimate,
+                             'SE' = NA, 
+                             'CI_low' = intervals$`2.5 %`,
+                             'CI_high' = intervals$`97.5 %`, 
+                             'p' = NA, 
+                             'Effects' = 'random', 
+                             'Component' = 'conditional')
+  
+  rep_df <- rbind(rep_df, df_intervals)
+  
+  
+  # Extracting the AR1 coefficient from the model
+  ar1 <- capture.output(summary(model)$varcor)
+  if (length(grep("ar1", ar1)) > 0) {
+    ar1_value <- as.numeric(strsplit(ar1[grep("ar1", ar1)], "\\(ar1\\)")[[1]][2])
+  } else {
+    ar1_value <- NA
+  }
+  
+  
+  # Combining and reporting
+  
+  rep_df <- rep_df %>% 
+    add_row(Parameter = '---WITHIN-PERSON EFFECTS---') %>%
+    add_row(Parameter = '---BETWEEN-PERSON EFFECTS---') %>%
+    add_row(Parameter = '---RANDOM-EFFECTS---') %>%
+    add_row(Parameter = 'Within-group standard error') %>%
+    add_row(Parameter = '---------MODEL INFO---------') %>%
+    add_row(Parameter = 'AR1', Coefficient = ar1_value)
+    
+  rep_df
+  rep_df[rep_df$Component == 'dispersion' & rep_df$Parameter == '(Intercept)', ]$Parameter <- 'dispersion'
+  
+
+  # Reorder the dataframe based on 'order'
+  rep_df$Parameter[rep_df$Parameter == "sbwwear_cw"] <- 'weartime_cw'
+  rep_df$Parameter[rep_df$Parameter == "sbwwear_cb"] <- 'weartime_cb'
+  rep_df$Parameter[rep_df$Parameter == "pbwwear_cw"] <- 'weartime_cw'
+  rep_df$Parameter[rep_df$Parameter == "pbwwear_cb"] <- 'weartime_cb'
+  
+  
+  rep_df <- rep_df[match(order, rep_df$Parameter),]
+  
+  # Call function for rounding and adding stars
+  rep_df <- process_coefficients(rep_df)
+  
+  
+  return(rep_df)
+}
+
+
+
+report_nlme <- function(model, order) {
+  # Extracting fixed effects
+  rep_df <- as.data.frame(model_parameters(model))[,c('Parameter', 'Coefficient', 'SE', 'p', 'CI_low', 'CI_high', 'Effects')]
+  
+  rep_df <- tryCatch({
+  
+      # Confidence intervals of random effects
+      int <- intervals(model)
+      int_rand <- as.data.frame(int$reStruct)
+      
+      # add AR1
+      int_ar1 <- as.data.frame(int$corStruct)
+      
+      if (nrow(int_ar1) > 0) {
+        rownames(int_ar1) <- c('AR1')
+        colnames(int_ar1) <- colnames(int_rand)
+        int_rand <- rbind(int_rand, int_ar1)
+      } else {
+        # Create a row with NA values
+        na_row <- setNames(data.frame(matrix(NA, ncol = ncol(int_rand), nrow = 1)), colnames(int_rand))
+        rownames(na_row) <- 'AR1'
+        int_rand <- rbind(int_rand, na_row)
+      }
+      
+      # Add Confint for sigma
+      int_resid <- as.data.frame(int$sigma)
+      
+      int_rand[nrow(int_rand) + 1,] <- c(int_resid[1, 1], int_resid[2, 1], int_resid[3, 1])
+      rownames(int_rand)[nrow(int_rand)] <- 'Within-group standard error'
+    
+      
+    
+      
+      # Construct df
+      
+      int_df <- data.frame(
+        Parameter = rownames(int_rand),
+        Coefficient = int_rand$CoupleID.est.,
+        SE = NA,
+        CI_low = int_rand$CoupleID.lower,
+        CI_high = int_rand$CoupleID.upper,
+        p = NA, 
+        Effects = 'random'
+      )
+      
+      # Combine
+      rep_df <- rep_df[rep_df$Effects != 'random',]
+      
+      rep_df <- rbind(rep_df, int_df)
+      rep_df$Parameter[rep_df$Parameter == 'sd((Intercept))'] <- 'Std.Dev.(Intercept)|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'sd(PSC_agent_cw)'] <- 'Std.Dev.PSC_agent_cw|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'sd(NSC_agent_cw)'] <- 'Std.Dev.NSC_agent_cw|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'cor((Intercept),PSC_agent_cw)'] <- 'Cor.PSC_agent_cw.(Intercept)|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'cor((Intercept),NSC_agent_cw)'] <- 'Cor.NSC_agent_cw.(Intercept)|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'cor(PSC_agent_cw,NSC_agent_cw)'] <- 'Cor.NSC_agent_cw.PSC_agent_cw|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'cor(NSC_agent_cw,PSC_agent_cw)'] <- 'Cor.NSC_agent_cw.PSC_agent_cw|CoupleID'
+      rep_df
+    }, error = function(e) {
+      rep_df$Parameter[rep_df$Parameter == "SD (Intercept)"] <- 'Std.Dev.(Intercept)|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'SD (PSC_agent_cw)'] <- 'Std.Dev.PSC_agent_cw|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'SD (NSC_agent_cw)'] <- 'Std.Dev.NSC_agent_cw|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'Cor (Intercept~PSC_agent_cw)'] <- 'Cor.PSC_agent_cw.(Intercept)|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'Cor (Intercept~NSC_agent_cw)'] <- 'Cor.NSC_agent_cw.(Intercept)|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'Cor (PSC_agent_cw~NSC_agent_cw)'] <- 'Cor.NSC_agent_cw.PSC_agent_cw|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'Cor (NSC_agent_cw~PSC_agent_cw)'] <- 'Cor.NSC_agent_cw.PSC_agent_cw|CoupleID'
+      rep_df$Parameter[rep_df$Parameter == 'SD (Observations)'] <- 'Within-group standard error'
+      rep_df
+    }
+  )
+  
+  # Finishing touches
+  rep_df <- rep_df %>% 
+    add_row(Parameter = '---WITHIN-PERSON EFFECTS---') %>%
+    add_row(Parameter = '---BETWEEN-PERSON EFFECTS---') %>%
+    add_row(Parameter = '---RANDOM-EFFECTS---') %>%
+    add_row(Parameter = '---------MODEL INFO---------') %>%
+    add_row(Parameter = 'dispersion') %>%
+    add_row(Parameter = 'sbwwear_cb') %>%
+    add_row(Parameter = 'sbwwear_cw')
+  
+  
+  # Reorder the dataframe based on 'order'
+  rep_df <- rep_df[match(order, rep_df$Parameter),]
+  
+  # Call function for rounding and adding stars
+  rep_df <- process_coefficients(rep_df)
+  
+  return(rep_df)
+}
+
+
+
+
+
+process_coefficients <- function(df) {
+  # Round
+  df[, c(2, 3, 5, 6)] <- round(df[, c(2, 3, 5, 6)], 2)
+  df[, 4] <- round(df[, 4], 3)
+
+  # Add stars
+  df$Coefficient <- as.character(sprintf("%.2f", df$Coefficient))
+  df$Coefficient <- ifelse(is.na(df$p), df$Coefficient,
+                           ifelse(df$p < 0.001, paste0(df$Coefficient, "***"),
+                                  ifelse(df$p < 0.01, paste0(df$Coefficient, "**"),
+                                         ifelse(df$p < 0.05, paste0(df$Coefficient, "*"), 
+                                                df$Coefficient))))
+  return(df)
+}
+
+```
+
+## Reversed Lagged Models
+### Predicting PSC
+```{r}
+
+psc_lagged <- lme(
+    fixed = PSC_agent_next_day ~
+      PSC_agent +
+      MVPA_target_cw + MVPA_agent_cw + 
+      Paff_target_cw + Paff_agent_cw + 
+      Naff_target_cw + Naff_agent_cw +
+      
+      MVPA_target_cb + MVPA_agent_cb + 
+      Paff_target_cb + Paff_agent_cb + 
+      Naff_target_cb + Naff_agent_cb,
+
+    data = as.data.frame(df),
+    random = ~ 1 | CoupleID,
+    correlation = corAR1(form = ~ 1 | CoupleID),
+    na.action = na.omit,
+    control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+
+check_singularity(psc_lagged)
+performance::check_model(psc_lagged)
+
+```
+
+```{r}
+
+psc_lagged_rep <- full_report(psc_lagged, order_rep)
+psc_lagged_rep
+
+# prepare to save to excel
+all_models <- list(psc_lagged_rep = psc_lagged_rep)
+
+```
+
+
+### Predicting NSC
+
+```{r}
+
+nsc_lagged <- lme(
+    fixed = NSC_agent_next_day ~
+      NSC_agent +
+      MVPA_target_cw + MVPA_agent_cw + 
+      Paff_target_cw + Paff_agent_cw + 
+      Naff_target_cw + Naff_agent_cw +
+      
+      MVPA_target_cb + MVPA_agent_cb + 
+      Paff_target_cb + Paff_agent_cb + 
+      Naff_target_cb + Naff_agent_cb,
+
+    data = as.data.frame(df),
+    random = ~ 1 | CoupleID,
+    correlation = corAR1(form = ~ 1 | CoupleID),
+    na.action = na.omit,
+    control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+
+check_singularity(nsc_lagged)
+performance::check_model(nsc_lagged)
+
+all_models <- list()
+all_models$psc_next_day_rep <- psc_lagged_rep
+
+```
+
+```{r}
+
+nsc_lagged_rep <- full_report(nsc_lagged, order_rep)
+nsc_lagged_rep
+
+# prepare to save to excel
+all_models <- list(nsc_lagged_rep = nsc_lagged_rep)
+
+print(nsc_lagged_rep)
+
+# Add to list
+all_models$nsc_next_day_rep <- nsc_lagged_rep
+```
+
+
+# Report everything again side by side for a cleaner appearance.
+
+## FUNCTION TO REPORT EVERYTHING SIDE BY SIDE
+
+```{r}
+
+report_side_by_side <- function(models, order, model_names) {
+  
+  if (length(models) != length(model_names)) {
+    stop('Number of models must match number of model names.')
+  }
+  
+  report_finished <- NULL
+  for (i in 1:length(models)) {
+    rep <- full_report(models[[i]], order)
+    
+    rownames(rep) <- order
+    
+    rep$CI <- ifelse(is.na(rep$CI_low), NA,
+      paste0('[', rep$CI_low, ', ', rep$CI_high, ']')
+    )
+    
+    rep <- rep[ , c('Coefficient', 'CI')]
+    
+    
+    colnames(rep) <- paste(colnames(rep), model_names[i])
+    rep
+    
+    #in the first round, we keep the column with the names to the left. 
+    if (i == 1) {
+      rep$Parameter <- rownames(rep)
+      rep <- rep[, c(3, 1,2)]
+    }
+    
+    
+    # Combine 
+    if (is.null(report_finished)) {
+      report_finished <- rep
+    } else {
+      report_finished <- cbind(report_finished, rep)
+    }
+  }
+  
+  rownames(report_finished) <- NULL
+  
+  return(report_finished)
+}
+
+```
+
+## Rerport all Lagged Models Side by Side
+
+```{r}
+
+export_everything <- list()
+
+base_models <- report_side_by_side(
+  models = list(
+    psc_lagged, nsc_lagged
+  ),
+  order <- order_rep,
+  model_names = list(
+    'Next Day Persuasion', 'Next Day Pressure'
+  )
+)
+
+base_models
+
+export_everything$Base_Models <- base_models
+
+```
+
+
+
+```{r}
+writexl::write_xlsx(export_everything, 'all_tables_lagged_inversed_psc_nsc_huge.xlsx')
+
+```
+
+

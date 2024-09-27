@@ -1,0 +1,176 @@
+"0",""
+"0","best_reliability <- function(vars) {"
+"0","  # Placeholder for results"
+"0","  results <- list()"
+"0",""
+"0","  # Loop through combinations of 2 or more constructs"
+"0","  for (n in 2:length(vars)) {"
+"0","    combinations <- combn(vars, n, simplify = FALSE)"
+"0","    "
+"0","    for (combo in combinations) {"
+"0","      # Run omegaSEM on the current combination"
+"0","      fit <- try(multilevelTools::omegaSEM("
+"0","        combo,"
+"0","        'CoupleID',"
+"0","        data = df"
+"0","      ), silent = TRUE)"
+"0","      "
+"0","      # Store results"
+"0","      if (!inherits(fit, ""try-error"")) {"
+"0","        results[[paste(combo, collapse = ""_"")]] <- fit"
+"0","      } else {"
+"0","        cat(""Error in combination:"", paste(combo, collapse = ""_""), ""\n"")"
+"0","      }"
+"0","    }"
+"0","  }"
+"0","  "
+"0","  # Print results"
+"0","  results"
+"0","}"
+"0",""
+"0",""
+"0","best_reliability(persuasion_vars)"
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko06” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", 
+   ""26"", ""30"", ""32"", ""35"", ""48"", ""50"", ""52"", ""54"", ""56"", ""64"", ""71"", ""73"", ""74"", ""76"", 
+   ""77"", ""79"", ""83"", ""85"", ""89"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko09” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""20"", ""26"", ""30"", 
+   ""43"", ""45"", ""50"", ""56"", ""57"", ""67"", ""71"", ""72"", ""73"", ""74"", ""76"", ""77"", ""79"", ""80"", 
+   ""83"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", ""103"", ""105"", ""107"", ""115"", ""116"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko06” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", 
+   ""26"", ""30"", ""32"", ""35"", ""48"", ""50"", ""52"", ""54"", ""56"", ""64"", ""71"", ""73"", ""74"", ""76"", 
+   ""77"", ""79"", ""83"", ""85"", ""89"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko21” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""5"", ""6"", ""10"", ""11"", ""20"", ""22"", ""25"", ""26"", ""30"", 
+   ""50"", ""52"", ""60"", ""73"", ""74"", ""76"", ""77"", ""80"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", 
+   ""105"", ""113"", ""115"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko06” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", 
+   ""26"", ""30"", ""32"", ""35"", ""48"", ""50"", ""52"", ""54"", ""56"", ""64"", ""71"", ""73"", ""74"", ""76"", 
+   ""77"", ""79"", ""83"", ""85"", ""89"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko25” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", ""25"", 
+   ""26"", ""32"", ""33"", ""43"", ""50"", ""52"", ""73"", ""74"", ""76"", ""79"", ""80"", ""84"", ""85"", ""89"", 
+   ""91"", ""94"", ""96"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko09” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""20"", ""26"", ""30"", 
+   ""43"", ""45"", ""50"", ""56"", ""57"", ""67"", ""71"", ""72"", ""73"", ""74"", ""76"", ""77"", ""79"", ""80"", 
+   ""83"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", ""103"", ""105"", ""107"", ""115"", ""116"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko21” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""5"", ""6"", ""10"", ""11"", ""20"", ""22"", ""25"", ""26"", ""30"", 
+   ""50"", ""52"", ""60"", ""73"", ""74"", ""76"", ""77"", ""80"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", 
+   ""105"", ""113"", ""115"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko09” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""20"", ""26"", ""30"", 
+   ""43"", ""45"", ""50"", ""56"", ""57"", ""67"", ""71"", ""72"", ""73"", ""74"", ""76"", ""77"", ""79"", ""80"", 
+   ""83"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", ""103"", ""105"", ""107"", ""115"", ""116"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko25” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", ""25"", 
+   ""26"", ""32"", ""33"", ""43"", ""50"", ""52"", ""73"", ""74"", ""76"", ""79"", ""80"", ""84"", ""85"", ""89"", 
+   ""91"", ""94"", ""96"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko21” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""5"", ""6"", ""10"", ""11"", ""20"", ""22"", ""25"", ""26"", ""30"", 
+   ""50"", ""52"", ""60"", ""73"", ""74"", ""76"", ""77"", ""80"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", 
+   ""105"", ""113"", ""115"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko25” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", ""25"", 
+   ""26"", ""32"", ""33"", ""43"", ""50"", ""52"", ""73"", ""74"", ""76"", ""79"", ""80"", ""84"", ""85"", ""89"", 
+   ""91"", ""94"", ""96"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko06” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", 
+   ""26"", ""30"", ""32"", ""35"", ""48"", ""50"", ""52"", ""54"", ""56"", ""64"", ""71"", ""73"", ""74"", ""76"", 
+   ""77"", ""79"", ""83"", ""85"", ""89"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko09” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""20"", ""26"", ""30"", 
+   ""43"", ""45"", ""50"", ""56"", ""57"", ""67"", ""71"", ""72"", ""73"", ""74"", ""76"", ""77"", ""79"", ""80"", 
+   ""83"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", ""103"", ""105"", ""107"", ""115"", ""116"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko21” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""5"", ""6"", ""10"", ""11"", ""20"", ""22"", ""25"", ""26"", ""30"", 
+   ""50"", ""52"", ""60"", ""73"", ""74"", ""76"", ""77"", ""80"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", 
+   ""105"", ""113"", ""115"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko06” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", 
+   ""26"", ""30"", ""32"", ""35"", ""48"", ""50"", ""52"", ""54"", ""56"", ""64"", ""71"", ""73"", ""74"", ""76"", 
+   ""77"", ""79"", ""83"", ""85"", ""89"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko09” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""20"", ""26"", ""30"", 
+   ""43"", ""45"", ""50"", ""56"", ""57"", ""67"", ""71"", ""72"", ""73"", ""74"", ""76"", ""77"", ""79"", ""80"", 
+   ""83"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", ""103"", ""105"", ""107"", ""115"", ""116"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko25” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", ""25"", 
+   ""26"", ""32"", ""33"", ""43"", ""50"", ""52"", ""73"", ""74"", ""76"", ""79"", ""80"", ""84"", ""85"", ""89"", 
+   ""91"", ""94"", ""96"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko06” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", 
+   ""26"", ""30"", ""32"", ""35"", ""48"", ""50"", ""52"", ""54"", ""56"", ""64"", ""71"", ""73"", ""74"", ""76"", 
+   ""77"", ""79"", ""83"", ""85"", ""89"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko21” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""5"", ""6"", ""10"", ""11"", ""20"", ""22"", ""25"", ""26"", ""30"", 
+   ""50"", ""52"", ""60"", ""73"", ""74"", ""76"", ""77"", ""80"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", 
+   ""105"", ""113"", ""115"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko25” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", ""25"", 
+   ""26"", ""32"", ""33"", ""43"", ""50"", ""52"", ""73"", ""74"", ""76"", ""79"", ""80"", ""84"", ""85"", ""89"", 
+   ""91"", ""94"", ""96"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko09” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""20"", ""26"", ""30"", 
+   ""43"", ""45"", ""50"", ""56"", ""57"", ""67"", ""71"", ""72"", ""73"", ""74"", ""76"", ""77"", ""79"", ""80"", 
+   ""83"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", ""103"", ""105"", ""107"", ""115"", ""116"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko21” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""5"", ""6"", ""10"", ""11"", ""20"", ""22"", ""25"", ""26"", ""30"", 
+   ""50"", ""52"", ""60"", ""73"", ""74"", ""76"", ""77"", ""80"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", 
+   ""105"", ""113"", ""115"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko25” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", ""25"", 
+   ""26"", ""32"", ""33"", ""43"", ""50"", ""52"", ""73"", ""74"", ""76"", ""79"", ""80"", ""84"", ""85"", ""89"", 
+   ""91"", ""94"", ""96"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko06” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", 
+   ""26"", ""30"", ""32"", ""35"", ""48"", ""50"", ""52"", ""54"", ""56"", ""64"", ""71"", ""73"", ""74"", ""76"", 
+   ""77"", ""79"", ""83"", ""85"", ""89"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko09” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""6"", ""10"", ""11"", ""13"", ""20"", ""26"", ""30"", 
+   ""43"", ""45"", ""50"", ""56"", ""57"", ""67"", ""71"", ""72"", ""73"", ""74"", ""76"", ""77"", ""79"", ""80"", 
+   ""83"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", ""103"", ""105"", ""107"", ""115"", ""116"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko21” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""5"", ""6"", ""10"", ""11"", ""20"", ""22"", ""25"", ""26"", ""30"", 
+   ""50"", ""52"", ""60"", ""73"", ""74"", ""76"", ""77"", ""80"", ""84"", ""85"", ""89"", ""94"", ""96"", ""100"", 
+   ""105"", ""113"", ""115"", ""119"", ""122""."
+"2","Warning: lavaan->lav_data_full():  
+   Level-1 variable “ppysko25” has no variance within some clusters . The cluster ids 
+   with zero within variance are: ""3"", ""5"", ""10"", ""11"", ""13"", ""17"", ""20"", ""22"", ""25"", 
+   ""26"", ""32"", ""33"", ""43"", ""50"", ""52"", ""73"", ""74"", ""76"", ""79"", ""80"", ""84"", ""85"", ""89"", 
+   ""91"", ""94"", ""96"", ""100"", ""102"", ""103"", ""105"", ""115"", ""116"", ""119"", ""122""."
+"1","$ppysko06_ppysko09
+"
+"1","$ppysko06_ppysko09$Results
+"

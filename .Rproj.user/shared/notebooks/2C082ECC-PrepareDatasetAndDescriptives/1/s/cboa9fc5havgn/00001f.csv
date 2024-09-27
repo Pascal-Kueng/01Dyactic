@@ -1,0 +1,12 @@
+"0","wbCorrObject <- wbCorr(df_cors, df$CoupleID)"
+"0","wbCorrObject_small <- wbCorr(df_cors_small, df$CoupleID)"
+"0",""
+"0","cor_matrix <- summary(wbCorrObject, which = 'wb')"
+"0","cor_matrix_small <- summary(wbCorrObject_small, 'wb')"
+"0",""
+"0","wbCorr::to_excel(cor_matrix, ""correlation_matrices.xlsx"")"
+"0","wbCorr::to_excel(cor_matrix_small, ""correlation_matrices_small.xlsx"")"
+"0",""
+"0","cor_matrix"
+"1","$merged_wb
+"

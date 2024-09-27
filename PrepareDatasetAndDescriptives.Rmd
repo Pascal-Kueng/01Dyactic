@@ -1,0 +1,756 @@
+---
+title: "Health-Related Social Influence Strategies in Overweight Romantic Couples: Daily Associations with Physical Activity and Affect for Targets and Actors "
+author: "Pascal Küng, MSc (ORCID: 0000-0001-7346-9414), Corina Berli, PhD (ORCID: 0000-0002-5078-3539), Patrick S. Höhener, MSc (ORCID: 0000-0003-3635-2799), Robert Tobias, PhD (ORCID: 0000-0001-7972-122X), Urte Scholz, PhD (ORCID: 0000-0003-0184-5921)"
+date: "`r Sys.Date()`"
+output: 
+  html_document: 
+    df_print: kable
+    toc: yes
+    toc_float: yes
+    code_folding: show
+    toc_depth: 5
+---
+
+
+
+# Setup and loading
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+options(dplyr.print_max = 100)
+
+library('ggplot2')
+library('nlme')
+library('MASS')
+library('haven')
+library('scales')
+library('cowplot')
+library('devtools')
+library('ggResidpanel')
+library('lme4')
+library('glmmTMB')
+library('DHARMa')
+library('ggeffects')
+library('broom.mixed')
+library('easystats')
+library('Hmisc')
+library('bmlm')
+library('tidyverse')
+library('wbCorr')
+library('psych')
+library('report')
+library('lavaan')
+library('basicPlotteR')
+library('misty')
+library('dplyr')
+
+# importing data
+DF <- haven::read_sav("C:/Users/kueng/OneDrive - Universität Zürich UZH/04 Papers/01 Dyactic Paper/Datensätze/DyadicDiaryT3T0+Acc_4Feld_200527.sav")
+df_baseline_target <- haven::read_sav("C:/Users/kueng/OneDrive - Universität Zürich UZH/04 Papers/01 Dyactic Paper/Datensätze/DYACTIC_T0Zielperson_A_141118.sav")
+df_baseline_agent <- haven::read_sav("C:/Users/kueng/OneDrive - Universität Zürich UZH/04 Papers/01 Dyactic Paper/Datensätze/DYACTIC_T0PartnerIn_B_141118.sav")
+
+# Keep only the 99 individuals that provided follow-up data
+df_baseline_target <- df_baseline_target[df_baseline_target$ID %in% unique(DF$ID), ]
+df_baseline_agent <- df_baseline_agent[df_baseline_agent$ID %in% unique(DF$ID), ]
+
+df <- DF %>% 
+  mutate(
+    intention_agent_lagged = as.numeric(Lag(pbyint99)), 
+    self_efficacy_agent_lagged = as.numeric(Lag(pbyswe99)),
+    plan_agent_lagged = as.numeric(Lag(pbypla99)), 
+    risk_perception_agent = as.numeric(pbyris99), 
+    perceived_benfeits_agent = as.numeric(pbyout99), 
+    
+    intention_target_lagged = as.numeric(Lag(sbyint99)), 
+    self_efficacy_target_lagged = as.numeric(Lag(sbyswe99)),
+    plan_target_lagged = as.numeric(Lag(sbypla99)), 
+    risk_perception_target = as.numeric(sbyris99), 
+    perceived_benfeits_target = as.numeric(sbyout99)
+  ) 
+
+
+```
+
+```{r loading_datasets, results='hide'}
+
+df$CoupleID <- as.factor(df$CoupleID)
+
+# Subsetting only the target person. 
+df <- df[(df["sbyz_p"] == 1), ]
+
+  
+```
+
+# Describe sample
+
+## Target's health
+```{r target_health}
+# Add PA risk assessment to df
+
+df_baseline_target <- df_baseline_target %>% 
+  mutate(
+    parq_score = rowMeans(across(c(sb0prq01, sb0prq02, sb0prq03, sb0prq04, sb0prq05, sb0prq06, sb0prq08)), na.rm = TRUE),
+    n_health_issues = rowSums(across(c(sb0prq01, sb0prq02, sb0prq03, sb0prq04, sb0prq05, sb0prq06, sb0prq08)), na.rm = TRUE),
+    has_zero_issues = as.factor(ifelse(n_health_issues == 0, 1, 0)),
+    has_heart_condition = as.factor(sb0prq01), 
+    has_chest_pain = as.factor(sb0prq02),
+    has_breathing_issues = as.factor(sb0prq03), 
+    has_dizziness_or_fainting = as.factor(sb0prq04), 
+    has_joint_or_bone_problems = as.factor(sb0prq05), 
+    takes_heart_medications = as.factor(sb0prq06), 
+    has_other_health_issues = as.factor(sb0prq08), 
+    other_health_issue = as.character(sb0prq07),
+    other_health_issue = as.factor(ifelse(
+      other_health_issue %in% c('faulheit', 'Keine Motivation (Faulheit)', 'Zeitmangel', 'Übergewicht', 'übergewicht'),
+      NA, other_health_issue)),
+    has_diabetes = as.factor(sb0prq09)
+  ) %>% 
+  dplyr::select(parq_score, n_health_issues, has_zero_issues, has_heart_condition, has_chest_pain, 
+         has_breathing_issues, has_dizziness_or_fainting, has_joint_or_bone_problems, 
+         takes_heart_medications, has_diabetes, has_other_health_issues, other_health_issue)
+
+
+a <- as.data.frame(report::report_table(df_baseline_target)[, c('Variable', 'Level', 'n_Obs', 'percentage_Obs', 'Mean', 'SD', 'Min', 'Max')])
+
+a[a$Level != 0,]
+
+hist(df_baseline_target$n_health_issues)
+
+
+```
+
+
+## Agent's health
+```{r agent_health}
+# Add PA risk assessment to df
+
+df_baseline_agent <- df_baseline_agent %>% 
+  mutate(
+    parq_score = rowMeans(across(c(pb0prq01, pb0prq02, pb0prq03, pb0prq04, pb0prq05, pb0prq06, pb0prq08)), na.rm = TRUE),
+    n_health_issues = rowSums(across(c(pb0prq01, pb0prq02, pb0prq03, pb0prq04, pb0prq05, pb0prq06, pb0prq08)), na.rm = TRUE),
+    has_zero_issues = as.factor(ifelse(n_health_issues == 0, 1, 0)), 
+    has_heart_condition = as.factor(pb0prq01), 
+    has_chest_pain = as.factor(pb0prq02), 
+    has_breathing_issues = as.factor(pb0prq03), 
+    has_dizziness_or_fainting = as.factor(pb0prq04), 
+    has_joint_or_bone_problems = as.factor(pb0prq05), 
+    takes_heart_medications = as.factor(pb0prq06), 
+    has_other_health_issues = as.factor(pb0prq08), 
+    other_health_issue = as.character(pb0prq07),
+    other_health_issue = as.factor(ifelse(
+      other_health_issue %in% c('faulheit', 'Keine Motivation (Faulheit)', 'Zeitmangel', 'Übergewicht', 'übergewicht'),
+      NA, other_health_issue)),
+    has_diabetes = as.factor(pb0prq09))  %>% 
+  dplyr::select(parq_score, n_health_issues, has_zero_issues, has_heart_condition, has_chest_pain, 
+       has_breathing_issues, has_dizziness_or_fainting, has_joint_or_bone_problems, 
+       takes_heart_medications, has_diabetes, has_other_health_issues, other_health_issue)
+
+
+b <- as.data.frame(report::report_table(df_baseline_agent)[, c('Variable', 'Level', 'n_Obs', 'percentage_Obs', 'Mean', 'SD', 'Min', 'Max')])
+
+
+b[b$Level != 0,]
+
+
+hist(df_baseline_agent$n_health_issues)
+
+
+```
+
+
+## Joint health
+```{r jointhealth}
+# Add PA risk assessment to df
+
+df_baseline_joint <- rbind(df_baseline_target, df_baseline_agent)
+
+
+c <- as.data.frame(report::report_table(df_baseline_joint)[, c('Variable', 'Level', 'n_Obs', 'percentage_Obs', 'Mean', 'SD', 'Min', 'Max')])
+
+c[c$Level != 0,]
+
+
+hist(df_baseline_joint$n_health_issues)
+
+
+```
+
+
+
+## Other sample Statistics
+
+```{r samplestats}
+
+infodf <- df[,c('sb0sex01', 'pb0sex01', 
+      'group', #group 1 + 2 = EG, 3 + 4 = KG
+      'sb0age01', 'pb0age01', 
+      'sb0edu01', 'pb0edu01', # welchen höchsten Bildungsabschluss haben Sie?
+      'sb0aus01', 'pb0aus01', # Was ist ihre Berufsausbildung?
+      'sb0occ01', 'pb0occ01', # Sie sind zur Zeit? (occupation)
+      'sb0bez_r', # Dauer Beziehung in Jahren
+      'sb0woh_r', # Dauer zusammen wohnen in Monaten
+      'sb0ziv01', #verheiratet?
+      'sb0kid01', # Kinder mit derzeitigem Parnter?
+      'sb0kiz01', # wie viele Kinder?
+      'sb0kih01', # Lebt min. 1 Kind in Haushalt?
+      'sb0net01', # Monatliches Netto Einkommen des Haushalts
+      'sb0bmi', # bmi target
+      'pb0bmi', # bmi agent
+      'sb0matur', # matura target
+      'pb0matur' # matura agent
+      )]
+
+infodf$sb0woh_r <- infodf$sb0woh_r / 12
+
+infodfunlabelled <- infodf %>%
+  mutate(across(where(is.labelled), as_factor)) %>%
+  as.data.frame(report_ta)
+  
+sample_df <- as.data.frame(report_table(infodfunlabelled))
+
+# export to excel
+
+writexl::write_xlsx(sample_df, "sample description.xlsx")
+
+```
+
+```{r rangediary}
+# Date of diary days
+range(df$sbwdat01, na.rm = T)
+
+```
+
+# Data wrangling
+
+## Calculating Scores
+First, we compute the reliability of our scales
+### Reliability within and between person for persuasion
+
+```{r omega1, warning=FALSE}
+
+# Function to compute within- and between- omega
+omega_multilevel <- function(data, variables, cluster_var = "CoupleID", fiml = TRUE, ci = 0.95) {
+  #' This function computes omega reliability coefficients for multilevel data.
+  #' It fits a two-level CFA model using lavaan and calculates omega coefficients for both within-cluster and between-cluster levels.
+  #' 
+  #' Inputs:
+  #' - data: A data frame containing the variables for analysis.
+  #' - variables: A character vector of variable names to include in the model.
+  #' - cluster_var: Name of the clustering variable (default: "CoupleID").
+  #' - fiml: If TRUE, uses Full Information Maximum Likelihood for missing data (default: TRUE).
+  #' - ci: Confidence level for intervals (default: 0.95).
+  #' 
+  #' Returns a list containing:
+  #' - omegas: Data frame with omega estimates, standard errors, and confidence intervals.
+  #' - fit_indices: Model fit indices (chi-square, df, p-value, CFI, TLI, RMSEA, SRMR).
+  #' - model: The lavaan model specification.
+  #' - full_summary: Full summary output from the lavaan model.
+  #' 
+  #' The function uses robust maximum likelihood estimation (MLR) and computes confidence intervals using the delta method.
+  #' At least two variables are required for the model.  
+  # Error checking
+  if(length(variables) < 2) {
+    stop("At least two variables are required for the model.")
+  }
+  
+  # Create the model string
+  model_parts <- lapply(seq_along(variables), function(i) {
+    var <- variables[i]
+    c(
+      sprintf("f_within =~ wl%d*%s", i, var),
+      sprintf("%s ~~ wr%d*%s", var, i, var),
+      sprintf("f_between =~ bl%d*%s", i, var),
+      sprintf("%s ~ 1", var),
+      sprintf("%s ~~ br%d*%s", var, i, var),
+      sprintf("wr%d > 0", i),
+      sprintf("br%d > 0", i)
+    )
+  })
+  
+  model <- c(
+    "# Within level",
+    "level: 1",
+    unlist(lapply(model_parts, `[`, 1:2)),
+    "",
+    "# Between level",
+    "level: 2",
+    unlist(lapply(model_parts, `[`, 3:5)),
+    "",
+    "# Defined parameters for omega calculation",
+    sprintf("num_within := (%s)^2", paste0("wl", seq_along(variables), collapse = " + ")),
+    sprintf("denom_within := (%s)^2 + (%s)", 
+            paste0("wl", seq_along(variables), collapse = " + "),
+            paste0("wr", seq_along(variables), collapse = " + ")),
+    "omega_within := num_within / denom_within",
+    "",
+    sprintf("num_between := (%s)^2", paste0("bl", seq_along(variables), collapse = " + ")),
+    sprintf("denom_between := (%s)^2 + (%s)", 
+            paste0("bl", seq_along(variables), collapse = " + "),
+            paste0("br", seq_along(variables), collapse = " + ")),
+    "omega_between := num_between / denom_between",
+    "",
+    "# Constraints",
+    unlist(lapply(model_parts, `[`, 6:7))
+  )
+  
+  model <- paste(model, collapse = "\n")
+  
+  # Fit the model
+  fit <- tryCatch({
+    lavaan::sem(
+      model, 
+      data = data, 
+      cluster = cluster_var, 
+      estimator = "MLR", 
+      missing = if(fiml) "fiml" else "listwise", 
+      std.lv = TRUE, 
+      auto.fix.first = FALSE, 
+      auto.var = FALSE,
+      se = "robust"
+    )
+  }, error = function(e) {
+    stop("Error in fitting the model: ", e$message)
+  })
+  
+  # Extract results
+  summary_fit <- summary(fit)
+  omegas <- summary_fit$pe[summary_fit$pe$label %in% c('omega_within', 'omega_between'), ]
+  
+  # Calculate confidence intervals
+  z_score <- qnorm((1 + ci) / 2)
+  omegas$ci.lower <- omegas$est - z_score * omegas$se
+  omegas$ci.upper <- omegas$est + z_score * omegas$se
+  
+  # Select relevant columns
+  omegas <- omegas[, c('label', 'est', 'se', 'ci.lower', 'ci.upper')]
+  rownames(omegas) <- omegas$label
+  omegas$label <- NULL
+  
+  # Ensure CI bounds are within [0, 1]
+  omegas$ci.lower <- pmax(0, pmin(1, omegas$ci.lower))
+  omegas$ci.upper <- pmax(0, pmin(1, omegas$ci.upper))
+  
+  fit_indices <- fitMeasures(fit, c("chisq", "df", "pvalue", "cfi", "tli", "rmsea", "srmr"))
+  
+  # Return results
+  list(
+    omegas = omegas,
+    fit_indices = fit_indices,
+    model = model,
+    full_summary = summary_fit
+  )
+}
+
+
+```
+
+
+
+Calculating Scores by taking the mean of the applicable items. "target"
+is the person that receives control. - "agent" is the person that uses
+control (but also support)
+
+```{r scores}
+
+# Predictors
+df$PSC_agent <- (df$ppysko06 + df$ppysko09 + df$ppysko21 + df$ppysko25) / 4
+df$NSC_agent <- (df$ppysko03 + df$ppysko11 + df$ppysko26 + df$ppysko29) / 4
+
+# Outcomes
+df$Paff_agent <- (df$pbypan03 + df$pbypan14 + df$pbypan09 + df$pbypan12 + df$pbypan16) / 5
+df$Naff_agent <- (df$pbypan02 + df$pbypan04 + df$pbypan07 + df$pbypan15 + df$pbypan19) / 5
+
+df$Paff_target <- (df$sbypan03 + df$sbypan14 + df$sbypan09 + df$sbypan12 + df$sbypan16) / 5
+df$Naff_target <- (df$sbypan02 + df$sbypan04 + df$sbypan07 + df$sbypan15 + df$sbypan19) / 5
+
+# Covariates
+## Social Support
+df$Sup_target <- (df$sbysug99 + df$sbysug98) / 2
+df$Sup_agent <- (df$pbysug99 + df$pbysug98) / 2
+
+
+# preparing covariates for sensitivity Analysis
+# mean for time spent together from each partners report. 
+df$time_spent <- df$sbytim99 + df$pbytim99 / 2
+# renaming variables that have to be centered
+df <- transform(df, 
+                reldur = sb0bez_r, 
+                sage = sb0age01, 
+                page = pb0age01, 
+                sbmi = sb0bmi, 
+                pbmi = pb0bmi
+                )
+
+
+# Filtering out days with low wear compliance
+df <- df %>% 
+  mutate(sbwmvpa01 = ifelse(sbwwear > 10, sbwmvpa01, NA),
+         pbwmvpa01 = ifelse(pbwwear > 10, pbwmvpa01, NA)
+         )
+
+head(df)
+
+
+```
+
+```{r omega2, warning = FALSE}
+# Define the variable sets for each construct
+
+persuasion_vars <- c('ppysko06', 'ppysko09', 'ppysko21', 'ppysko25') #25, 21, (6)
+pressure_vars <- c('ppysko03', 'ppysko11', 'ppysko26', 'ppysko29') # 03, 26
+paff_agent_vars <- c("pbypan03", "pbypan14", "pbypan09", "pbypan12", "pbypan16")
+naff_agent_vars <- c("pbypan02", "pbypan04", "pbypan07", "pbypan15", "pbypan19")
+paff_target_vars <- c("sbypan03", "sbypan14", "sbypan09", "sbypan12", "sbypan16")
+naff_target_vars <- c("sbypan02", "sbypan04", "sbypan07", "sbypan15", "sbypan19")
+
+naff_both_vars <- c(naff_agent_vars, naff_target_vars)
+paff_both_vars <- c(paff_agent_vars, paff_target_vars)
+
+
+sup_target_vars <- c("sbysug99", "sbysug98")
+sup_agent_vars <- c("pbysug99", "pbysug98")
+
+# Fit models for each construct
+# Persuasion
+fit <- omega_multilevel(data = df, variables = persuasion_vars)
+print(round(fit$omegas, 2))
+# Pressure
+fit <- omega_multilevel(data = df, variables = pressure_vars)
+print(round(fit$omegas, 2))
+
+# Positive Affect both
+fit <- omega_multilevel(data = df, variables = paff_both_vars)
+print(round(fit$omegas, 2))
+# Negative Affect both
+fit <- omega_multilevel(data = df, variables = paff_both_vars)
+print(round(fit$omegas, 2))
+
+# Positive Affect Agent
+#fit <- omega_multilevel(data = df, variables = paff_agent_vars)
+#print(round(fit$omegas, 2))
+# Negative Affect Agent
+#fit <- omega_multilevel(data = df, variables = naff_agent_vars)
+#print(round(fit$omegas, 2))
+# Positive Affect Target
+#fit <- omega_multilevel(data = df, variables = paff_target_vars)
+#print(round(fit$omegas, 2))
+# Negative Affect Target
+#fit <- omega_multilevel(data = df, variables = naff_target_vars)
+#print(round(fit$omegas, 2))
+
+
+fit <- multilevelTools::omegaSEM(
+  sup_target_vars,
+  'CoupleID',
+  data = df
+)
+
+fit
+
+```
+
+
+
+Checking reliability with different combinations of items. 
+
+```{r}
+
+best_reliability <- function(vars) {
+  # Placeholder for results
+  results <- list()
+
+  # Loop through combinations of 2 or more constructs
+  for (n in 2:length(vars)) {
+    combinations <- combn(vars, n, simplify = FALSE)
+    
+    for (combo in combinations) {
+      # Run omegaSEM on the current combination
+      fit <- try(multilevelTools::omegaSEM(
+        combo,
+        'CoupleID',
+        data = df
+      ), silent = TRUE)
+      
+      # Store results
+      if (!inherits(fit, "try-error")) {
+        results[[paste(combo, collapse = "_")]] <- fit
+      } else {
+        cat("Error in combination:", paste(combo, collapse = "_"), "\n")
+      }
+    }
+  }
+  
+  # Print results
+  results
+}
+
+
+best_reliability(persuasion_vars)
+best_reliability(pressure_vars)
+
+```
+
+
+
+The original study assigned couples to interventions vs. control groups.
+In this followup study, we would like to still have more or less equal
+group sizes.
+
+```{r chekgroups}
+
+# Combine control groups (3 and 4) and set them to 0.
+df$group[df$group %in% c(3, 4)] <- 0
+
+# Coding group as factor and setting 'control' as the reference category.
+df$group <- factor(
+  df$group, levels = c(0, 1, 2), 
+  labels = c(
+    'control group',
+    'dyadic action control', 
+    'individual action control'
+  )
+)
+
+
+
+table(df$group) / 14
+table(df$sb0sex01)
+
+
+
+
+
+```
+
+## centering predictors
+
+```{r centering}
+df <- isolate(df, by = 'CoupleID',
+            c("PSC_agent", "NSC_agent", "Sup_agent", "Sup_target", "time_spent", 
+              "reldur", "sage", "page", "sbmi", "pbmi", "sbwwear", "pbwwear",
+              'intention_agent_lagged', 'intention_target_lagged',
+              'self_efficacy_agent_lagged', 'self_efficacy_target_lagged',
+              'plan_agent_lagged', 'plan_target_lagged',
+              'risk_perception_agent', 'risk_perception_target',
+              'perceived_benfeits_agent', 'perceived_benfeits_target'),
+            which='both')
+```
+
+# Exploring the data
+
+```{r prepare for plotting}
+
+# writing a function that allows changing the plot size per cell.
+size <- function(width, height) {
+    options(repr.plot.width = width, repr.plot.height = height)
+    }
+
+# writing a function that creates a title object for cowplots
+title <- function(tit, plot_row,fs=20) {
+    titleobject <- ggdraw() + draw_label(
+            tit, x = 0, hjust = 0, fontface="bold", size = fs) +
+            theme(plot.margin = margin(0,0,0,7))
+    b <- plot_grid(
+            titleobject, plot_row,
+            ncol = 1,
+            # rel_heights values control vertical title margins
+            rel_heights = c(0.1, 1))
+        return(b)
+    }
+
+```
+
+## Basic plotting {.tabset}
+
+### Boxplots
+
+```{r boxplot}
+scales <- c("PSC_agent", "NSC_agent", "Paff_target", "Paff_agent", "Naff_target", "Naff_agent")
+mvpa <- c("sbwmvpa01", "pbwmvpa01" )
+
+boxplot(df[,scales])
+boxplot(df[,mvpa])
+```
+
+### Histograms outcomes
+
+```{r histograms}
+var_names <- c("sbwmvpa01", "pbwmvpa01", "Paff_target", "Paff_agent", "Naff_target", "Naff_agent")
+
+for (var_name in var_names) {
+  hist(df[[var_name]], main=var_name)
+}
+
+```
+
+### Histograms predictors
+
+```{r histograms 2}
+var_names <- c("PSC_agent", "NSC_agent")
+
+for (var_name in var_names) {
+  hist(df[[var_name]], main=var_name)
+}
+
+```
+
+## Correlations (within- and between person)
+
+The package wbCorr and it's code is available on Github:
+<https://github.com/Pascal-Kueng/wbCorr>
+
+```{r prepare correlations, include=FALSE}
+# Variables that vary both within and between should come first
+vars_b <- c("PSC_agent", "NSC_agent", # For presentation purposes, Variables that vary both within and between person come first.
+        "Paff_agent", "Paff_target", "Naff_agent", "Naff_target", "pbwmvpa01", "sbwmvpa01",
+        "Sup_agent", "Sup_target", 
+        "pbwwear", "sbwwear", "time_spent", 
+        
+        "intention_agent_lagged", "intention_target_lagged",
+        "self_efficacy_agent_lagged", "self_efficacy_target_lagged",
+        "risk_perception_agent", "risk_perception_target",
+        "perceived_benfeits_agent", "perceived_benfeits_target",
+        # Variables that vary only within come next
+        "sbyday", "weeknd2",
+        # Variables that vary only between person come last.
+        "EG", "reldur", "sage", "page", "sbmi", "pbmi", "sb0sex01", "pb0sex01", "sb0kih01"
+        ) 
+
+# We create a vector of the full names, as we want them in the table. The order has to match the variables above.
+var_names <- c("Exerted persuasion", "Exerted pressure",
+"Positive affect agent", "Positive affect target", "Negative affect agent", "Negative affect target", "MVPA agent (in minutes)", "MVPA target (in minutes)",
+"Provided support agent", "Provided support target",
+"Wear time agent (in minutes)", "Wear time target (in minutes)", "Time spent together (in minutes)",
+
+"Previous day's intention to be active today agent",
+"Previous day's intention to be active today target",
+"Previous day's self-efficacy for today agent",
+"Previous day's self-efficacy for today target",
+"Risk perception of not engaging in MVPA agent",
+"Risk perception of not engaging in MVPA target",
+"Perceived benefits of MVPA agent",
+"Perceived benefits of MVPA target",
+
+
+"Day", "Weekend (no = 0; yes = 1)",
+"Intervention group (no = 0; yes = 1)", "Relationship length (years)", "Age target (years)", "Age agent (years)", "BMI target (kg/m2)", "BMI agent (kg/m2)", "Gender target (female = 0; male = 1)", "Gender agent (female = 0; male = 1)", "Kids (no = 0; yes = 1)")
+
+df_cors <- df[vars_b]
+colnames(df_cors) <- var_names
+```
+
+```{r prepare small correlation table, include=FALSE}
+# small corr table
+vars_b_small <- c("PSC_agent", "NSC_agent", # For presentation purposes, Variables that vary both within and between person come first.
+        "Paff_agent", "Paff_target", "Naff_agent", "Naff_target", "pbwmvpa01", "sbwmvpa01",
+        "Sup_agent", "Sup_target", 
+        "pbwwear", "sbwwear", "time_spent", 
+        # Variables that vary only within come next
+        "sbyday", "weeknd2"
+        ) 
+
+# We create a vector of the full names, as we want them in the table. The order has to match the variables above.
+var_names_small <- c("Persuasion agent", "Pressure agent",
+"Positive affect agent", "Positive affect target", "Negative affect agent", "Negative affect target", "MVPA agent (in minutes)", "MVPA target (in minutes)",
+"Provided support agent", "Provided support target",
+"Wear time agent (in minutes)", "Wear time target (in minutes)", "Time spent together (in minutes)", 
+"Day", "Weekend (no = 0; yes = 1)")
+
+df_cors_small <- df[vars_b_small]
+colnames(df_cors_small) <- var_names_small
+```
+
+```{r compute correlations with wbCorr}
+wbCorrObject <- wbCorr(df_cors, df$CoupleID)
+wbCorrObject_small <- wbCorr(df_cors_small, df$CoupleID)
+
+cor_matrix <- summary(wbCorrObject, which = 'wb')
+cor_matrix_small <- summary(wbCorrObject_small, 'wb')
+
+wbCorr::to_excel(cor_matrix, "correlation_matrices.xlsx")
+wbCorr::to_excel(cor_matrix_small, "correlation_matrices_small.xlsx")
+
+cor_matrix
+cor_matrix_small
+
+```
+
+## Descriptives
+
+```{r descriptivestatistics}
+# Stats for all Vars with the full DF
+vars_stats <- setdiff(vars_b, c("sb0sex01", "pb0sex01", "sb0kih01"))
+
+as.data.frame(report_table(df[,vars_stats]))
+
+```
+
+```{r desc2}
+
+as.data.frame(report_table(df$reldur))
+
+```
+
+
+# Save datasets
+
+```{r}
+
+
+# Only save the variables we need for furhter analyses for data protection reasons. 
+
+# Define the list of variables to keep
+variables_to_keep <- c(
+  'ppysko06', 'ppysko09', 'ppysko21', 'ppysko25',
+  'ppysko03', 'ppysko11', 'ppysko26', 'ppysko29',
+  
+  'CoupleID', 'PSC_agent', 'NSC_agent', 'PSC_agent_cw', 'NSC_agent_cw', 'sbyday', 'weeknd2', 
+  'PSC_agent_cb', 'NSC_agent_cb', 'sbwmvpa01', 'sbwwear_cw', 'sbwwear_cb', 
+  'sbwwear', 'pbwwear',
+  'pbwmvpa01', 'pbwwear_cw', 'pbwwear_cb', 'Sup_agent_cw', 'Sup_target_cw', 
+  'time_spent_cw', 'intention_agent_lagged_cw', 'intention_target_lagged_cw', 
+  'self_efficacy_agent_lagged_cw', 'self_efficacy_target_lagged_cw', 
+  'plan_agent_lagged_cw', 'plan_target_lagged_cw', 'risk_perception_agent_cw', 
+  'risk_perception_target_cw', 'perceived_benfeits_agent_cw', 
+  'perceived_benfeits_target_cw', 'Sup_agent_cb', 'Sup_target_cb', 
+  'time_spent_cb', 'intention_agent_lagged_cb', 'intention_target_lagged_cb', 
+  'self_efficacy_agent_lagged_cb', 'self_efficacy_target_lagged_cb', 
+  'plan_agent_lagged_cb', 'plan_target_lagged_cb', 'risk_perception_agent_cb', 
+  'risk_perception_target_cb', 'perceived_benfeits_agent_cb', 
+  'perceived_benfeits_target_cb', 'reldur_cb', 'page', 'sage', 'pbmi', 'sbmi', 
+  'sb0kih01', 'pb0kih01', 'sb0sex01', 'pb0sex01', 'group', 'Paff_target', 'Naff_target', 
+  'Paff_agent', 'Naff_agent'
+)
+
+
+
+
+
+df_og <- df
+# Subset the dataframe
+df_subset <- df_og %>% select(all_of(variables_to_keep))
+
+# Save the subset to an RDS file for OSF
+saveRDS(df_subset, file = 'DataSet_Subset.rds')
+
+
+```
+
+
+
+
+```{r}
+report::report_system()
+
+```
+
+```{r results='asis'}
+report::report_packages()
+
+```
+
+```{r results='asis'}
+report::cite_packages()
+
+```

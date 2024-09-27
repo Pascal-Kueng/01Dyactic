@@ -1,0 +1,8 @@
+"0","# Add PA risk assessment to df"
+"0",""
+"0","df_baseline_joint <- rbind(df_baseline_target, df_baseline_agent)"
+"0",""
+"0",""
+"0","c <- as.data.frame(report::report_table(df_baseline_joint)[, c('Variable', 'Level', 'n_Obs', 'percentage_Obs', 'Mean', 'SD', 'Min', 'Max')])"
+"0",""
+"0","c[c$Level != 0,]"
