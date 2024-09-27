@@ -1,5 +1,0 @@
-"0","var_names <- c(""PSC_agent"", ""NSC_agent"")"
-"0",""
-"0","for (var_name in var_names) {"
-"0","  hist(df[[var_name]], main=var_name)"
-"0","}"

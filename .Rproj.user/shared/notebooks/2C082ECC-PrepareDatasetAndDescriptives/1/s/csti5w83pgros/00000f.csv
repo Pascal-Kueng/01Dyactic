@@ -1,7 +1,0 @@
-"0",""
-"0","df$CoupleID <- as.factor(df$CoupleID)"
-"0",""
-"0","# Subsetting only the target person. "
-"0","df <- df[(df[""sbyz_p""] == 1), ]"
-"0",""
-"0","  "

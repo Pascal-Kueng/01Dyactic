@@ -1,5 +1,0 @@
-"0","var_names <- c(""sbwmvpa01"", ""pbwmvpa01"", ""Paff_target"", ""Paff_agent"", ""Naff_target"", ""Naff_agent"")"
-"0",""
-"0","for (var_name in var_names) {"
-"0","  hist(df[[var_name]], main=var_name)"
-"0","}"

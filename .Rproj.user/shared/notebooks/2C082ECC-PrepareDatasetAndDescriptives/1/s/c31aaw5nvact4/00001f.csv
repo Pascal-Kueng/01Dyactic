@@ -1,4 +1,0 @@
-"0","scales <- c(""PSC_agent"", ""NSC_agent"", ""Paff_target"", ""Paff_agent"", ""Naff_target"", ""Naff_agent"")"
-"0","mvpa <- c(""sbwmvpa01"", ""pbwmvpa01"" )"
-"0",""
-"0","boxplot(df[,scales])"

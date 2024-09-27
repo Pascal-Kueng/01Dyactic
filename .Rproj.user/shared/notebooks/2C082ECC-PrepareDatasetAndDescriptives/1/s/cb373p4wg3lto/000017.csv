@@ -1,4 +1,0 @@
-"0","# Stats for all Vars with the full DF"
-"0","vars_stats <- setdiff(vars_b, c(""sb0sex01"", ""pb0sex01"", ""sb0kih01""))"
-"0",""
-"0","as.data.frame(report_table(df[,vars_stats]))"
