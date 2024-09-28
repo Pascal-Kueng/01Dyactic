@@ -541,4 +541,22 @@ plot(simResids)
 summary(mvpa_partner)
 ```
 
-only 25
+
+
+# References (Packages) and System information
+
+```{r}
+report::report_system()
+
+```
+
+```{r results = 'asis'}
+report::report_packages()
+
+```
+
+```{r results = 'asis'}
+report::cite_packages()
+
+```
+

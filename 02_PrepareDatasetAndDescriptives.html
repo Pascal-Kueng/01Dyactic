@@ -6826,594 +6826,6 @@ fit</code></pre>
 ## 22  omega_within 0.857    0.841    0.873
 ## 28 omega_between 0.985    0.976    0.995</code></pre>
 <p>Checking reliability with different combinations of items.</p>
-<pre class="r"><code>best_reliability &lt;- function(vars) {
-  # Placeholder for results
-  results &lt;- list()
-
-  # Loop through combinations of 2 or more constructs
-  for (n in 2:length(vars)) {
-    combinations &lt;- combn(vars, n, simplify = FALSE)
-    
-    for (combo in combinations) {
-      # Run omegaSEM on the current combination
-      fit &lt;- try(multilevelTools::omegaSEM(
-        combo,
-        &#39;CoupleID&#39;,
-        data = df
-      ), silent = TRUE)
-      
-      # Store results
-      if (!inherits(fit, &quot;try-error&quot;)) {
-        results[[paste(combo, collapse = &quot;_&quot;)]] &lt;- fit
-      } else {
-        cat(&quot;Error in combination:&quot;, paste(combo, collapse = &quot;_&quot;), &quot;\n&quot;)
-      }
-    }
-  }
-  
-  # Print results
-  results
-}
-
-
-best_reliability(persuasion_vars)</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko06&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;26&quot;, &quot;30&quot;, &quot;32&quot;, &quot;35&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;64&quot;, &quot;71&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;83&quot;, &quot;85&quot;, &quot;89&quot;, &quot;100&quot;, 
-##    &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko09&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;20&quot;, &quot;26&quot;, &quot;30&quot;, &quot;43&quot;, &quot;45&quot;, &quot;50&quot;, &quot;56&quot;, &quot;57&quot;, &quot;67&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, 
-##    &quot;100&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;115&quot;, &quot;116&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko06&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;26&quot;, &quot;30&quot;, &quot;32&quot;, &quot;35&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;64&quot;, &quot;71&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;83&quot;, &quot;85&quot;, &quot;89&quot;, &quot;100&quot;, 
-##    &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko21&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, &quot;20&quot;, 
-##    &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;50&quot;, &quot;52&quot;, &quot;60&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;80&quot;, 
-##    &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;105&quot;, &quot;113&quot;, &quot;115&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko06&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;26&quot;, &quot;30&quot;, &quot;32&quot;, &quot;35&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;64&quot;, &quot;71&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;83&quot;, &quot;85&quot;, &quot;89&quot;, &quot;100&quot;, 
-##    &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko25&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, 
-##    &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;32&quot;, &quot;33&quot;, &quot;43&quot;, &quot;50&quot;, &quot;52&quot;, &quot;73&quot;, &quot;74&quot;, 
-##    &quot;76&quot;, &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;91&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, 
-##    &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko09&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;20&quot;, &quot;26&quot;, &quot;30&quot;, &quot;43&quot;, &quot;45&quot;, &quot;50&quot;, &quot;56&quot;, &quot;57&quot;, &quot;67&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, 
-##    &quot;100&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;115&quot;, &quot;116&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko21&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, &quot;20&quot;, 
-##    &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;50&quot;, &quot;52&quot;, &quot;60&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;80&quot;, 
-##    &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;105&quot;, &quot;113&quot;, &quot;115&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko09&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;20&quot;, &quot;26&quot;, &quot;30&quot;, &quot;43&quot;, &quot;45&quot;, &quot;50&quot;, &quot;56&quot;, &quot;57&quot;, &quot;67&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, 
-##    &quot;100&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;115&quot;, &quot;116&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko25&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, 
-##    &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;32&quot;, &quot;33&quot;, &quot;43&quot;, &quot;50&quot;, &quot;52&quot;, &quot;73&quot;, &quot;74&quot;, 
-##    &quot;76&quot;, &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;91&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, 
-##    &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko21&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, &quot;20&quot;, 
-##    &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;50&quot;, &quot;52&quot;, &quot;60&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;80&quot;, 
-##    &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;105&quot;, &quot;113&quot;, &quot;115&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko25&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, 
-##    &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;32&quot;, &quot;33&quot;, &quot;43&quot;, &quot;50&quot;, &quot;52&quot;, &quot;73&quot;, &quot;74&quot;, 
-##    &quot;76&quot;, &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;91&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, 
-##    &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko06&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;26&quot;, &quot;30&quot;, &quot;32&quot;, &quot;35&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;64&quot;, &quot;71&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;83&quot;, &quot;85&quot;, &quot;89&quot;, &quot;100&quot;, 
-##    &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko09&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;20&quot;, &quot;26&quot;, &quot;30&quot;, &quot;43&quot;, &quot;45&quot;, &quot;50&quot;, &quot;56&quot;, &quot;57&quot;, &quot;67&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, 
-##    &quot;100&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;115&quot;, &quot;116&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko21&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, &quot;20&quot;, 
-##    &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;50&quot;, &quot;52&quot;, &quot;60&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;80&quot;, 
-##    &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;105&quot;, &quot;113&quot;, &quot;115&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko06&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;26&quot;, &quot;30&quot;, &quot;32&quot;, &quot;35&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;64&quot;, &quot;71&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;83&quot;, &quot;85&quot;, &quot;89&quot;, &quot;100&quot;, 
-##    &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko09&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;20&quot;, &quot;26&quot;, &quot;30&quot;, &quot;43&quot;, &quot;45&quot;, &quot;50&quot;, &quot;56&quot;, &quot;57&quot;, &quot;67&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, 
-##    &quot;100&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;115&quot;, &quot;116&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko25&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, 
-##    &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;32&quot;, &quot;33&quot;, &quot;43&quot;, &quot;50&quot;, &quot;52&quot;, &quot;73&quot;, &quot;74&quot;, 
-##    &quot;76&quot;, &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;91&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, 
-##    &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko06&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;26&quot;, &quot;30&quot;, &quot;32&quot;, &quot;35&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;64&quot;, &quot;71&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;83&quot;, &quot;85&quot;, &quot;89&quot;, &quot;100&quot;, 
-##    &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko21&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, &quot;20&quot;, 
-##    &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;50&quot;, &quot;52&quot;, &quot;60&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;80&quot;, 
-##    &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;105&quot;, &quot;113&quot;, &quot;115&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko25&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, 
-##    &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;32&quot;, &quot;33&quot;, &quot;43&quot;, &quot;50&quot;, &quot;52&quot;, &quot;73&quot;, &quot;74&quot;, 
-##    &quot;76&quot;, &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;91&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, 
-##    &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko09&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;20&quot;, &quot;26&quot;, &quot;30&quot;, &quot;43&quot;, &quot;45&quot;, &quot;50&quot;, &quot;56&quot;, &quot;57&quot;, &quot;67&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, 
-##    &quot;100&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;115&quot;, &quot;116&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko21&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, &quot;20&quot;, 
-##    &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;50&quot;, &quot;52&quot;, &quot;60&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;80&quot;, 
-##    &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;105&quot;, &quot;113&quot;, &quot;115&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko25&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, 
-##    &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;32&quot;, &quot;33&quot;, &quot;43&quot;, &quot;50&quot;, &quot;52&quot;, &quot;73&quot;, &quot;74&quot;, 
-##    &quot;76&quot;, &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;91&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, 
-##    &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko06&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;26&quot;, &quot;30&quot;, &quot;32&quot;, &quot;35&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;64&quot;, &quot;71&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;83&quot;, &quot;85&quot;, &quot;89&quot;, &quot;100&quot;, 
-##    &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko09&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;20&quot;, &quot;26&quot;, &quot;30&quot;, &quot;43&quot;, &quot;45&quot;, &quot;50&quot;, &quot;56&quot;, &quot;57&quot;, &quot;67&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, 
-##    &quot;100&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;115&quot;, &quot;116&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko21&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, &quot;20&quot;, 
-##    &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;50&quot;, &quot;52&quot;, &quot;60&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;80&quot;, 
-##    &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;105&quot;, &quot;113&quot;, &quot;115&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko25&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, 
-##    &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;25&quot;, &quot;26&quot;, &quot;32&quot;, &quot;33&quot;, &quot;43&quot;, &quot;50&quot;, &quot;52&quot;, &quot;73&quot;, &quot;74&quot;, 
-##    &quot;76&quot;, &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;89&quot;, &quot;91&quot;, &quot;94&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, 
-##    &quot;105&quot;, &quot;115&quot;, &quot;116&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## $ppysko06_ppysko09
-## $ppysko06_ppysko09$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.598    0.553    0.642
-## 28 omega_between 0.904    0.855    0.954
-## 
-## 
-## $ppysko06_ppysko21
-## $ppysko06_ppysko21$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.329    0.256    0.402
-## 28 omega_between 0.772    0.688    0.856
-## 
-## 
-## $ppysko06_ppysko25
-## $ppysko06_ppysko25$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.483    0.425    0.541
-## 28 omega_between 0.905    0.855    0.955
-## 
-## 
-## $ppysko09_ppysko21
-## $ppysko09_ppysko21$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.399    0.335    0.462
-## 28 omega_between 0.733    0.642    0.824
-## 
-## 
-## $ppysko09_ppysko25
-## $ppysko09_ppysko25$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.492    0.436    0.548
-## 28 omega_between 0.824    0.742    0.907
-## 
-## 
-## $ppysko21_ppysko25
-## $ppysko21_ppysko25$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.489    0.433    0.546
-## 28 omega_between 0.796    0.709    0.882
-## 
-## 
-## $ppysko06_ppysko09_ppysko21
-## $ppysko06_ppysko09_ppysko21$Results
-##            label   est ci.lower ci.upper
-## 28  omega_within 0.541    0.499    0.583
-## 34 omega_between 0.868    0.812    0.924
-## 
-## 
-## $ppysko06_ppysko09_ppysko25
-## $ppysko06_ppysko09_ppysko25$Results
-##            label   est ci.lower ci.upper
-## 28  omega_within 0.624    0.588    0.660
-## 34 omega_between 0.920    0.886    0.953
-## 
-## 
-## $ppysko06_ppysko21_ppysko25
-## $ppysko06_ppysko21_ppysko25$Results
-##            label   est ci.lower ci.upper
-## 28  omega_within 0.549    0.506    0.591
-## 34 omega_between 0.877    0.827    0.928
-## 
-## 
-## $ppysko09_ppysko21_ppysko25
-## $ppysko09_ppysko21_ppysko25$Results
-##            label   est ci.lower ci.upper
-## 28  omega_within 0.568    0.526    0.610
-## 34 omega_between 0.865    0.809    0.921
-## 
-## 
-## $ppysko06_ppysko09_ppysko21_ppysko25
-## $ppysko06_ppysko09_ppysko21_ppysko25$Results
-##            label   est ci.lower ci.upper
-## 35  omega_within 0.628    0.594    0.662
-## 42 omega_between 0.904    0.867    0.942</code></pre>
-<pre class="r"><code>best_reliability(pressure_vars)</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko03&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;9&quot;, &quot;10&quot;, 
-##    &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;30&quot;, &quot;36&quot;, 
-##    &quot;37&quot;, &quot;38&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, 
-##    &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;94&quot;, &quot;95&quot;, 
-##    &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko11&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;36&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, 
-##    &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;57&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;89&quot;, &quot;90&quot;, 
-##    &quot;94&quot;, &quot;95&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;109&quot;, &quot;113&quot;, &quot;116&quot;, &quot;119&quot;, 
-##    &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko03&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;9&quot;, &quot;10&quot;, 
-##    &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;30&quot;, &quot;36&quot;, 
-##    &quot;37&quot;, &quot;38&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, 
-##    &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;94&quot;, &quot;95&quot;, 
-##    &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko26&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;2&quot;, &quot;3&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;19&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;32&quot;, 
-##    &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, &quot;57&quot;, 
-##    &quot;59&quot;, &quot;61&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, 
-##    &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;90&quot;, &quot;91&quot;, &quot;92&quot;, &quot;93&quot;, &quot;94&quot;, 
-##    &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;103&quot;, &quot;107&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, &quot;115&quot;, &quot;118&quot;, &quot;119&quot;, 
-##    &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko03&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;9&quot;, &quot;10&quot;, 
-##    &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;30&quot;, &quot;36&quot;, 
-##    &quot;37&quot;, &quot;38&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, 
-##    &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;94&quot;, &quot;95&quot;, 
-##    &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko29&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;8&quot;, 
-##    &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, 
-##    &quot;30&quot;, &quot;32&quot;, &quot;36&quot;, &quot;37&quot;, &quot;38&quot;, &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, 
-##    &quot;53&quot;, &quot;54&quot;, &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;82&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, 
-##    &quot;89&quot;, &quot;90&quot;, &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;103&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko11&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;36&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, 
-##    &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;57&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;89&quot;, &quot;90&quot;, 
-##    &quot;94&quot;, &quot;95&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;109&quot;, &quot;113&quot;, &quot;116&quot;, &quot;119&quot;, 
-##    &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko26&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;2&quot;, &quot;3&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;19&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;32&quot;, 
-##    &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, &quot;57&quot;, 
-##    &quot;59&quot;, &quot;61&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, 
-##    &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;90&quot;, &quot;91&quot;, &quot;92&quot;, &quot;93&quot;, &quot;94&quot;, 
-##    &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;103&quot;, &quot;107&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, &quot;115&quot;, &quot;118&quot;, &quot;119&quot;, 
-##    &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko11&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;36&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, 
-##    &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;57&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;89&quot;, &quot;90&quot;, 
-##    &quot;94&quot;, &quot;95&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;109&quot;, &quot;113&quot;, &quot;116&quot;, &quot;119&quot;, 
-##    &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko29&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;8&quot;, 
-##    &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, 
-##    &quot;30&quot;, &quot;32&quot;, &quot;36&quot;, &quot;37&quot;, &quot;38&quot;, &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, 
-##    &quot;53&quot;, &quot;54&quot;, &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;82&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, 
-##    &quot;89&quot;, &quot;90&quot;, &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;103&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko26&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;2&quot;, &quot;3&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;19&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;32&quot;, 
-##    &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, &quot;57&quot;, 
-##    &quot;59&quot;, &quot;61&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, 
-##    &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;90&quot;, &quot;91&quot;, &quot;92&quot;, &quot;93&quot;, &quot;94&quot;, 
-##    &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;103&quot;, &quot;107&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, &quot;115&quot;, &quot;118&quot;, &quot;119&quot;, 
-##    &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko29&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;8&quot;, 
-##    &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, 
-##    &quot;30&quot;, &quot;32&quot;, &quot;36&quot;, &quot;37&quot;, &quot;38&quot;, &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, 
-##    &quot;53&quot;, &quot;54&quot;, &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;82&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, 
-##    &quot;89&quot;, &quot;90&quot;, &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;103&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko03&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;9&quot;, &quot;10&quot;, 
-##    &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;30&quot;, &quot;36&quot;, 
-##    &quot;37&quot;, &quot;38&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, 
-##    &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;94&quot;, &quot;95&quot;, 
-##    &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko11&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;36&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, 
-##    &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;57&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;89&quot;, &quot;90&quot;, 
-##    &quot;94&quot;, &quot;95&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;109&quot;, &quot;113&quot;, &quot;116&quot;, &quot;119&quot;, 
-##    &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko26&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;2&quot;, &quot;3&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;19&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;32&quot;, 
-##    &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, &quot;57&quot;, 
-##    &quot;59&quot;, &quot;61&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, 
-##    &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;90&quot;, &quot;91&quot;, &quot;92&quot;, &quot;93&quot;, &quot;94&quot;, 
-##    &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;103&quot;, &quot;107&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, &quot;115&quot;, &quot;118&quot;, &quot;119&quot;, 
-##    &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko03&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;9&quot;, &quot;10&quot;, 
-##    &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;30&quot;, &quot;36&quot;, 
-##    &quot;37&quot;, &quot;38&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, 
-##    &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;94&quot;, &quot;95&quot;, 
-##    &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko11&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;36&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, 
-##    &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;57&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;89&quot;, &quot;90&quot;, 
-##    &quot;94&quot;, &quot;95&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;109&quot;, &quot;113&quot;, &quot;116&quot;, &quot;119&quot;, 
-##    &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko29&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;8&quot;, 
-##    &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, 
-##    &quot;30&quot;, &quot;32&quot;, &quot;36&quot;, &quot;37&quot;, &quot;38&quot;, &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, 
-##    &quot;53&quot;, &quot;54&quot;, &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;82&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, 
-##    &quot;89&quot;, &quot;90&quot;, &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;103&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko03&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;9&quot;, &quot;10&quot;, 
-##    &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;30&quot;, &quot;36&quot;, 
-##    &quot;37&quot;, &quot;38&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, 
-##    &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;94&quot;, &quot;95&quot;, 
-##    &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko26&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;2&quot;, &quot;3&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;19&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;32&quot;, 
-##    &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, &quot;57&quot;, 
-##    &quot;59&quot;, &quot;61&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, 
-##    &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;90&quot;, &quot;91&quot;, &quot;92&quot;, &quot;93&quot;, &quot;94&quot;, 
-##    &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;103&quot;, &quot;107&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, &quot;115&quot;, &quot;118&quot;, &quot;119&quot;, 
-##    &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko29&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;8&quot;, 
-##    &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, 
-##    &quot;30&quot;, &quot;32&quot;, &quot;36&quot;, &quot;37&quot;, &quot;38&quot;, &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, 
-##    &quot;53&quot;, &quot;54&quot;, &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;82&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, 
-##    &quot;89&quot;, &quot;90&quot;, &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;103&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko11&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;36&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, 
-##    &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;57&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;89&quot;, &quot;90&quot;, 
-##    &quot;94&quot;, &quot;95&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;109&quot;, &quot;113&quot;, &quot;116&quot;, &quot;119&quot;, 
-##    &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko26&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;2&quot;, &quot;3&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;19&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;32&quot;, 
-##    &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, &quot;57&quot;, 
-##    &quot;59&quot;, &quot;61&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, 
-##    &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;90&quot;, &quot;91&quot;, &quot;92&quot;, &quot;93&quot;, &quot;94&quot;, 
-##    &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;103&quot;, &quot;107&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, &quot;115&quot;, &quot;118&quot;, &quot;119&quot;, 
-##    &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko29&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;8&quot;, 
-##    &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, 
-##    &quot;30&quot;, &quot;32&quot;, &quot;36&quot;, &quot;37&quot;, &quot;38&quot;, &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, 
-##    &quot;53&quot;, &quot;54&quot;, &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;82&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, 
-##    &quot;89&quot;, &quot;90&quot;, &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;103&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko03&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;9&quot;, &quot;10&quot;, 
-##    &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;30&quot;, &quot;36&quot;, 
-##    &quot;37&quot;, &quot;38&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, 
-##    &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, 
-##    &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;94&quot;, &quot;95&quot;, 
-##    &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;107&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko11&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;17&quot;, &quot;20&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;30&quot;, &quot;36&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, 
-##    &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;57&quot;, &quot;61&quot;, &quot;62&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, 
-##    &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;79&quot;, &quot;80&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;89&quot;, &quot;90&quot;, 
-##    &quot;94&quot;, &quot;95&quot;, &quot;96&quot;, &quot;100&quot;, &quot;102&quot;, &quot;103&quot;, &quot;105&quot;, &quot;109&quot;, &quot;113&quot;, &quot;116&quot;, &quot;119&quot;, 
-##    &quot;122&quot;, &quot;123&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko26&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;2&quot;, &quot;3&quot;, &quot;6&quot;, &quot;10&quot;, &quot;11&quot;, 
-##    &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;19&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, &quot;32&quot;, 
-##    &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;49&quot;, &quot;50&quot;, &quot;51&quot;, &quot;52&quot;, &quot;53&quot;, &quot;54&quot;, &quot;57&quot;, 
-##    &quot;59&quot;, &quot;61&quot;, &quot;63&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, &quot;73&quot;, &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, 
-##    &quot;79&quot;, &quot;80&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, &quot;89&quot;, &quot;90&quot;, &quot;91&quot;, &quot;92&quot;, &quot;93&quot;, &quot;94&quot;, 
-##    &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;103&quot;, &quot;107&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, &quot;115&quot;, &quot;118&quot;, &quot;119&quot;, 
-##    &quot;122&quot;.</code></pre>
-<pre><code>## Warning: lavaan-&gt;lav_data_full():  
-##    Level-1 variable &quot;ppysko29&quot; has no variance within some clusters . The 
-##    cluster ids with zero within variance are: &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;5&quot;, &quot;6&quot;, &quot;8&quot;, 
-##    &quot;10&quot;, &quot;11&quot;, &quot;13&quot;, &quot;15&quot;, &quot;17&quot;, &quot;20&quot;, &quot;21&quot;, &quot;22&quot;, &quot;24&quot;, &quot;25&quot;, &quot;26&quot;, &quot;27&quot;, 
-##    &quot;30&quot;, &quot;32&quot;, &quot;36&quot;, &quot;37&quot;, &quot;38&quot;, &quot;42&quot;, &quot;43&quot;, &quot;45&quot;, &quot;46&quot;, &quot;48&quot;, &quot;50&quot;, &quot;52&quot;, 
-##    &quot;53&quot;, &quot;54&quot;, &quot;56&quot;, &quot;57&quot;, &quot;59&quot;, &quot;61&quot;, &quot;62&quot;, &quot;64&quot;, &quot;67&quot;, &quot;70&quot;, &quot;71&quot;, &quot;72&quot;, 
-##    &quot;74&quot;, &quot;76&quot;, &quot;77&quot;, &quot;78&quot;, &quot;79&quot;, &quot;80&quot;, &quot;82&quot;, &quot;83&quot;, &quot;84&quot;, &quot;85&quot;, &quot;86&quot;, &quot;87&quot;, 
-##    &quot;89&quot;, &quot;90&quot;, &quot;95&quot;, &quot;96&quot;, &quot;97&quot;, &quot;100&quot;, &quot;103&quot;, &quot;109&quot;, &quot;111&quot;, &quot;113&quot;, &quot;114&quot;, 
-##    &quot;115&quot;, &quot;116&quot;, &quot;117&quot;, &quot;118&quot;, &quot;119&quot;, &quot;122&quot;.</code></pre>
-<pre><code>## $ppysko03_ppysko11
-## $ppysko03_ppysko11$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.544    0.493    0.594
-## 28 omega_between 0.905    0.851    0.960
-## 
-## 
-## $ppysko03_ppysko26
-## $ppysko03_ppysko26$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.394    0.327    0.462
-## 28 omega_between 0.890    0.821    0.959
-## 
-## 
-## $ppysko03_ppysko29
-## $ppysko03_ppysko29$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.319    0.242    0.395
-## 28 omega_between 0.742    0.622    0.862
-## 
-## 
-## $ppysko11_ppysko26
-## $ppysko11_ppysko26$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.352    0.279    0.424
-## 28 omega_between 0.881    0.813    0.948
-## 
-## 
-## $ppysko11_ppysko29
-## $ppysko11_ppysko29$Results
-##            label  est ci.lower ci.upper
-## 22  omega_within 0.46    0.400    0.519
-## 28 omega_between 0.86    0.789    0.930
-## 
-## 
-## $ppysko26_ppysko29
-## $ppysko26_ppysko29$Results
-##            label   est ci.lower ci.upper
-## 22  omega_within 0.334     0.26    0.408
-## 28 omega_between 0.963     0.93    0.996
-## 
-## 
-## $ppysko03_ppysko11_ppysko26
-## $ppysko03_ppysko11_ppysko26$Results
-##            label   est ci.lower ci.upper
-## 28  omega_within 0.545    0.502    0.589
-## 34 omega_between 0.942    0.912    0.973
-## 
-## 
-## $ppysko03_ppysko11_ppysko29
-## $ppysko03_ppysko11_ppysko29$Results
-##            label   est ci.lower ci.upper
-## 28  omega_within 0.593    0.549    0.636
-## 34 omega_between 0.913    0.874    0.951
-## 
-## 
-## $ppysko03_ppysko26_ppysko29
-## $ppysko03_ppysko26_ppysko29$Results
-##            label   est ci.lower ci.upper
-## 28  omega_within 0.455    0.402    0.508
-## 34 omega_between 0.941    0.912    0.971
-## 
-## 
-## $ppysko11_ppysko26_ppysko29
-## $ppysko11_ppysko26_ppysko29$Results
-##            label   est ci.lower ci.upper
-## 28  omega_within 0.491    0.442    0.541
-## 34 omega_between 0.938    0.908    0.968
-## 
-## 
-## $ppysko03_ppysko11_ppysko26_ppysko29
-## $ppysko03_ppysko11_ppysko26_ppysko29$Results
-##            label   est ci.lower ci.upper
-## 35  omega_within 0.590    0.553    0.627
-## 42 omega_between 0.945    0.922    0.969</code></pre>
 <p>The original study assigned couples to interventions vs. control
 groups. In this followup study, we would like to still have more or less
 equal group sizes.</p>
@@ -9284,7 +8696,7 @@ saveRDS(df_subset, file = &#39;DataSet_Subset.rds&#39;)</code></pre>
 <li>Matrix (version 1.7.0; Bates D et al., 2024)</li>
 <li>effectsize (version 0.8.9; Ben-Shachar MS et al., 2020)</li>
 <li>broom.mixed (version 0.2.9.5; Bolker B, Robinson D, 2024)</li>
-<li>glmmTMB (version 1.1.9; Brooks ME et al., 2017)</li>
+<li>glmmTMB (version 1.1.10; Brooks ME et al., 2017)</li>
 <li>basicPlotteR (version 0.0.0.9000; Crispell J, 2024)</li>
 <li>Rcpp (version 1.0.13; Eddelbuettel D et al., 2024)</li>
 <li>ggResidpanel (version 0.3.0; Goode K, Rey K, 2019)</li>
@@ -9304,10 +8716,10 @@ saveRDS(df_subset, file = &#39;DataSet_Subset.rds&#39;)</code></pre>
 <li>correlation (version 0.8.5; Makowski D et al., 2022)</li>
 <li>tibble (version 3.2.1; Müller K, Wickham H, 2023)</li>
 <li>datawizard (version 0.12.3; Patil I et al., 2022)</li>
-<li>nlme (version 3.1.166; Pinheiro J et al., 2024)</li>
+<li>nlme (version 3.1.164; Pinheiro J et al., 2023)</li>
 <li>R (version 4.4.1; R Core Team, 2024)</li>
 <li>lavaan (version 0.6.18; Rosseel Y, 2012)</li>
-<li>MASS (version 7.3.61; Venables WN, Ripley BD, 2002)</li>
+<li>MASS (version 7.3.60.2; Venables WN, Ripley BD, 2002)</li>
 <li>bmlm (version 1.3.15; Vuorre M, Bolger N, 2018)</li>
 <li>ggplot2 (version 3.5.1; Wickham H, 2016)</li>
 <li>forcats (version 1.0.0; Wickham H, 2023)</li>
@@ -9337,7 +8749,7 @@ Estimation of Effect Size Indices and Standardized Parameters.”
 <em>Journal of Open Source Software</em>, <em>5</em>(56), 2815. <a href="doi:10.21105/joss.02815" class="uri">doi:10.21105/joss.02815</a>
 <a href="https://doi.org/10.21105/joss.02815" class="uri">https://doi.org/10.21105/joss.02815</a>, <a href="https://doi.org/10.21105/joss.02815" class="uri">https://doi.org/10.21105/joss.02815</a>.</li>
 <li>Bolker B, Robinson D (2024). <em>broom.mixed: Tidying Methods for
-Mixed Models</em>. R package version 0.2.9.5, <a href="https://CRAN.R-project.org/package=broom.mixed" class="uri">https://CRAN.R-project.org/package=broom.mixed</a>.</li>
+Mixed Models</em>. R package version 0.2.9.5, <a href="https://github.com/bbolker/broom.mixed" class="uri">https://github.com/bbolker/broom.mixed</a>.</li>
 <li>Brooks ME, Kristensen K, van Benthem KJ, Magnusson A, Berg CW,
 Nielsen A, Skaug HJ, Maechler M, Bolker BM (2017). “glmmTMB Balances
 Speed and Flexibility Among Packages for Zero-inflated Generalized
@@ -9348,9 +8760,10 @@ help with base R plotting</em>. R package version 0.0.0.9000, commit
 4628140c8eac2adac70d85632b9d0966a374e4bf, <a href="https://github.com/JosephCrispell/basicPlotteR" class="uri">https://github.com/JosephCrispell/basicPlotteR</a>.</li>
 <li>Eddelbuettel D, Francois R, Allaire J, Ushey K, Kou Q, Russell N,
 Ucar I, Bates D, Chambers J (2024). <em>Rcpp: Seamless R and C++
-Integration</em>. R package version 1.0.13, <a href="https://CRAN.R-project.org/package=Rcpp" class="uri">https://CRAN.R-project.org/package=Rcpp</a>. Eddelbuettel D,
-François R (2011). “Rcpp: Seamless R and C++ Integration.” <em>Journal
-of Statistical Software</em>, <em>40</em>(8), 1-18. <a href="doi:10.18637/jss.v040.i08" class="uri">doi:10.18637/jss.v040.i08</a> <a href="https://doi.org/10.18637/jss.v040.i08" class="uri">https://doi.org/10.18637/jss.v040.i08</a>. Eddelbuettel D
+Integration</em>. R package version 1.0.13, <a href="https://dirk.eddelbuettel.com/code/rcpp.html" class="uri">https://dirk.eddelbuettel.com/code/rcpp.html</a>, <a href="https://github.com/RcppCore/Rcpp" class="uri">https://github.com/RcppCore/Rcpp</a>, <a href="https://www.rcpp.org" class="uri">https://www.rcpp.org</a>.
+Eddelbuettel D, François R (2011). “Rcpp: Seamless R and C++
+Integration.” <em>Journal of Statistical Software</em>, <em>40</em>(8),
+1-18. <a href="doi:10.18637/jss.v040.i08" class="uri">doi:10.18637/jss.v040.i08</a> <a href="https://doi.org/10.18637/jss.v040.i08" class="uri">https://doi.org/10.18637/jss.v040.i08</a>. Eddelbuettel D
 (2013). <em>Seamless R and C++ Integration with Rcpp</em>. Springer, New
 York. <a href="doi:10.1007/978-1-4614-6868-4" class="uri">doi:10.1007/978-1-4614-6868-4</a> <a href="https://doi.org/10.1007/978-1-4614-6868-4" class="uri">https://doi.org/10.1007/978-1-4614-6868-4</a>, ISBN
 978-1-4614-6867-7. Eddelbuettel D, Balamuta J (2018). “Extending R with
@@ -9358,15 +8771,15 @@ C++: A Brief Introduction to Rcpp.” <em>The American Statistician</em>,
 <em>72</em>(1), 28-36. <a href="doi:10.1080/00031305.2017.1375990" class="uri">doi:10.1080/00031305.2017.1375990</a> <a href="https://doi.org/10.1080/00031305.2017.1375990" class="uri">https://doi.org/10.1080/00031305.2017.1375990</a>.</li>
 <li>Goode K, Rey K (2019). <em>ggResidpanel: Panels and Interactive
 Versions of Diagnostic Plots using ‘ggplot2’</em>. R package version
-0.3.0, <a href="https://CRAN.R-project.org/package=ggResidpanel" class="uri">https://CRAN.R-project.org/package=ggResidpanel</a>.</li>
+0.3.0, <a href="https://goodekat.github.io/ggResidpanel/" class="uri">https://goodekat.github.io/ggResidpanel/</a>.</li>
 <li>Grolemund G, Wickham H (2011). “Dates and Times Made Easy with
 lubridate.” <em>Journal of Statistical Software</em>, <em>40</em>(3),
 1-25. <a href="https://www.jstatsoft.org/v40/i03/" class="uri">https://www.jstatsoft.org/v40/i03/</a>.</li>
 <li>Harrell Jr F (2024). <em>Hmisc: Harrell Miscellaneous</em>. R
-package version 5.1-3, <a href="https://CRAN.R-project.org/package=Hmisc" class="uri">https://CRAN.R-project.org/package=Hmisc</a>.</li>
+package version 5.1-3, <a href="https://hbiostat.org/R/Hmisc/" class="uri">https://hbiostat.org/R/Hmisc/</a>.</li>
 <li>Hartig F (2022). <em>DHARMa: Residual Diagnostics for Hierarchical
 (Multi-Level / Mixed) Regression Models</em>. R package version 0.4.6,
-<a href="https://CRAN.R-project.org/package=DHARMa" class="uri">https://CRAN.R-project.org/package=DHARMa</a>.</li>
+<a href="http://florianhartig.github.io/DHARMa/" class="uri">http://florianhartig.github.io/DHARMa/</a>.</li>
 <li>Küng P (2023). <em>wbCorr: Bivariate Within- and Between-Cluster
 Correlations</em>. University of Zürich. R package version 0.1.22. <a href="https://github.com/Pascal-Kueng/wbCorr" class="uri">https://github.com/Pascal-Kueng/wbCorr</a>.</li>
 <li>Lüdecke D (2018). “ggeffects: Tidy Data Frames of Marginal Effects
@@ -9408,15 +8821,15 @@ D, Ben-Shachar M, Patil I, Lüdecke D (2020). “Methods and Algorithms for
 Correlation Analysis in R.” <em>Journal of Open Source Software</em>,
 <em>5</em>(51), 2306. <a href="doi:10.21105/joss.02306" class="uri">doi:10.21105/joss.02306</a> <a href="https://doi.org/10.21105/joss.02306" class="uri">https://doi.org/10.21105/joss.02306</a>, <a href="https://joss.theoj.org/papers/10.21105/joss.02306" class="uri">https://joss.theoj.org/papers/10.21105/joss.02306</a>.</li>
 <li>Müller K, Wickham H (2023). <em>tibble: Simple Data Frames</em>. R
-package version 3.2.1, <a href="https://CRAN.R-project.org/package=tibble" class="uri">https://CRAN.R-project.org/package=tibble</a>.</li>
+package version 3.2.1, <a href="https://github.com/tidyverse/tibble" class="uri">https://github.com/tidyverse/tibble</a>, <a href="https://tibble.tidyverse.org/" class="uri">https://tibble.tidyverse.org/</a>.</li>
 <li>Patil I, Makowski D, Ben-Shachar M, Wiernik B, Bacher E, Lüdecke D
 (2022). “datawizard: An R Package for Easy Data Preparation and
 Statistical Transformations.” <em>Journal of Open Source Software</em>,
 <em>7</em>(78), 4684. <a href="doi:10.21105/joss.04684" class="uri">doi:10.21105/joss.04684</a> <a href="https://doi.org/10.21105/joss.04684" class="uri">https://doi.org/10.21105/joss.04684</a>.</li>
-<li>Pinheiro J, Bates D, R Core Team (2024). <em>nlme: Linear and
-Nonlinear Mixed Effects Models</em>. R package version 3.1-166, <a href="https://svn.r-project.org/R-packages/trunk/nlme/" class="uri">https://svn.r-project.org/R-packages/trunk/nlme/</a>.
-Pinheiro JC, Bates DM (2000). <em>Mixed-Effects Models in S and
-S-PLUS</em>. Springer, New York. <a href="doi:10.1007/b98882" class="uri">doi:10.1007/b98882</a> <a href="https://doi.org/10.1007/b98882" class="uri">https://doi.org/10.1007/b98882</a>.</li>
+<li>Pinheiro J, Bates D, R Core Team (2023). <em>nlme: Linear and
+Nonlinear Mixed Effects Models</em>. R package version 3.1-164, <a href="https://CRAN.R-project.org/package=nlme" class="uri">https://CRAN.R-project.org/package=nlme</a>. Pinheiro JC,
+Bates DM (2000). <em>Mixed-Effects Models in S and S-PLUS</em>.
+Springer, New York. <a href="doi:10.1007/b98882" class="uri">doi:10.1007/b98882</a> <a href="https://doi.org/10.1007/b98882" class="uri">https://doi.org/10.1007/b98882</a>.</li>
 <li>R Core Team (2024). <em>R: A Language and Environment for
 Statistical Computing</em>. R Foundation for Statistical Computing,
 Vienna, Austria. <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</li>
@@ -9433,9 +8846,9 @@ experimental data in cognitive psychology and neuroscience.”
 <li>Wickham H (2016). <em>ggplot2: Elegant Graphics for Data
 Analysis</em>. Springer-Verlag New York. ISBN 978-3-319-24277-4, <a href="https://ggplot2.tidyverse.org" class="uri">https://ggplot2.tidyverse.org</a>.</li>
 <li>Wickham H (2023). <em>forcats: Tools for Working with Categorical
-Variables (Factors)</em>. R package version 1.0.0, <a href="https://CRAN.R-project.org/package=forcats" class="uri">https://CRAN.R-project.org/package=forcats</a>.</li>
+Variables (Factors)</em>. R package version 1.0.0, <a href="https://github.com/tidyverse/forcats" class="uri">https://github.com/tidyverse/forcats</a>, <a href="https://forcats.tidyverse.org/" class="uri">https://forcats.tidyverse.org/</a>.</li>
 <li>Wickham H (2023). <em>stringr: Simple, Consistent Wrappers for
-Common String Operations</em>. R package version 1.5.1, <a href="https://CRAN.R-project.org/package=stringr" class="uri">https://CRAN.R-project.org/package=stringr</a>.</li>
+Common String Operations</em>. R package version 1.5.1, <a href="https://github.com/tidyverse/stringr" class="uri">https://github.com/tidyverse/stringr</a>, <a href="https://stringr.tidyverse.org" class="uri">https://stringr.tidyverse.org</a>.</li>
 <li>Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R,
 Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E,
 Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K,
@@ -9443,29 +8856,29 @@ Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.”
 <em>Journal of Open Source Software</em>, <em>4</em>(43), 1686. <a href="doi:10.21105/joss.01686" class="uri">doi:10.21105/joss.01686</a>
 <a href="https://doi.org/10.21105/joss.01686" class="uri">https://doi.org/10.21105/joss.01686</a>.</li>
 <li>Wickham H, Bryan J, Barrett M, Teucher A (2024). <em>usethis:
-Automate Package and Project Setup</em>. R package version 3.0.0, <a href="https://CRAN.R-project.org/package=usethis" class="uri">https://CRAN.R-project.org/package=usethis</a>.</li>
+Automate Package and Project Setup</em>. R package version 3.0.0, <a href="https://github.com/r-lib/usethis" class="uri">https://github.com/r-lib/usethis</a>, <a href="https://usethis.r-lib.org" class="uri">https://usethis.r-lib.org</a>.</li>
 <li>Wickham H, François R, Henry L, Müller K, Vaughan D (2023).
 <em>dplyr: A Grammar of Data Manipulation</em>. R package version 1.1.4,
-<a href="https://CRAN.R-project.org/package=dplyr" class="uri">https://CRAN.R-project.org/package=dplyr</a>.</li>
+<a href="https://github.com/tidyverse/dplyr" class="uri">https://github.com/tidyverse/dplyr</a>, <a href="https://dplyr.tidyverse.org" class="uri">https://dplyr.tidyverse.org</a>.</li>
 <li>Wickham H, Henry L (2023). <em>purrr: Functional Programming
-Tools</em>. R package version 1.0.2, <a href="https://CRAN.R-project.org/package=purrr" class="uri">https://CRAN.R-project.org/package=purrr</a>.</li>
+Tools</em>. R package version 1.0.2, <a href="https://github.com/tidyverse/purrr" class="uri">https://github.com/tidyverse/purrr</a>, <a href="https://purrr.tidyverse.org/" class="uri">https://purrr.tidyverse.org/</a>.</li>
 <li>Wickham H, Hester J, Bryan J (2024). <em>readr: Read Rectangular
-Text Data</em>. R package version 2.1.5, <a href="https://CRAN.R-project.org/package=readr" class="uri">https://CRAN.R-project.org/package=readr</a>.</li>
+Text Data</em>. R package version 2.1.5, <a href="https://github.com/tidyverse/readr" class="uri">https://github.com/tidyverse/readr</a>, <a href="https://readr.tidyverse.org" class="uri">https://readr.tidyverse.org</a>.</li>
 <li>Wickham H, Hester J, Chang W, Bryan J (2022). <em>devtools: Tools to
-Make Developing R Packages Easier</em>. R package version 2.4.5, <a href="https://CRAN.R-project.org/package=devtools" class="uri">https://CRAN.R-project.org/package=devtools</a>.</li>
+Make Developing R Packages Easier</em>. R package version 2.4.5, <a href="https://github.com/r-lib/devtools" class="uri">https://github.com/r-lib/devtools</a>, <a href="https://devtools.r-lib.org/" class="uri">https://devtools.r-lib.org/</a>.</li>
 <li>Wickham H, Miller E, Smith D (2023). <em>haven: Import and Export
-‘SPSS’, ‘Stata’ and ‘SAS’ Files</em>. R package version 2.5.4, <a href="https://CRAN.R-project.org/package=haven" class="uri">https://CRAN.R-project.org/package=haven</a>.</li>
+‘SPSS’, ‘Stata’ and ‘SAS’ Files</em>. R package version 2.5.4, <a href="https://github.com/tidyverse/haven" class="uri">https://github.com/tidyverse/haven</a>, <a href="https://github.com/WizardMac/ReadStat" class="uri">https://github.com/WizardMac/ReadStat</a>, <a href="https://haven.tidyverse.org" class="uri">https://haven.tidyverse.org</a>.</li>
 <li>Wickham H, Pedersen T, Seidel D (2023). <em>scales: Scale Functions
-for Visualization</em>. R package version 1.3.0, <a href="https://CRAN.R-project.org/package=scales" class="uri">https://CRAN.R-project.org/package=scales</a>.</li>
+for Visualization</em>. R package version 1.3.0, <a href="https://github.com/r-lib/scales" class="uri">https://github.com/r-lib/scales</a>, <a href="https://scales.r-lib.org" class="uri">https://scales.r-lib.org</a>.</li>
 <li>Wickham H, Vaughan D, Girlich M (2024). <em>tidyr: Tidy Messy
-Data</em>. R package version 1.3.1, <a href="https://CRAN.R-project.org/package=tidyr" class="uri">https://CRAN.R-project.org/package=tidyr</a>.</li>
+Data</em>. R package version 1.3.1, <a href="https://github.com/tidyverse/tidyr" class="uri">https://github.com/tidyverse/tidyr</a>, <a href="https://tidyr.tidyverse.org" class="uri">https://tidyr.tidyverse.org</a>.</li>
 <li>Wilke C (2024). <em>cowplot: Streamlined Plot Theme and Plot
-Annotations for ‘ggplot2’</em>. R package version 1.1.3, <a href="https://CRAN.R-project.org/package=cowplot" class="uri">https://CRAN.R-project.org/package=cowplot</a>.</li>
+Annotations for ‘ggplot2’</em>. R package version 1.1.3, <a href="https://wilkelab.org/cowplot/" class="uri">https://wilkelab.org/cowplot/</a>.</li>
 <li>William Revelle (2024). <em>psych: Procedures for Psychological,
 Psychometric, and Personality Research</em>. Northwestern University,
 Evanston, Illinois. R package version 2.4.6, <a href="https://CRAN.R-project.org/package=psych" class="uri">https://CRAN.R-project.org/package=psych</a>.</li>
 <li>Yanagida T (2024). <em>misty: Miscellaneous Functions ‘T.
-Yanagida’</em>. R package version 0.6.7, <a href="https://CRAN.R-project.org/package=misty" class="uri">https://CRAN.R-project.org/package=misty</a>.</li>
+Yanagida’</em>. R package version 0.6.7.</li>
 </ul>
 </div>
 

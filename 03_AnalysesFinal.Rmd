@@ -1968,12 +1968,12 @@ report::report_system()
 
 ```
 
-```{r}
+```{r results = 'asis'}
 report::report_packages()
 
 ```
 
-```{r}
+```{r results = 'asis'}
 report::cite_packages()
 
 ```

@@ -493,7 +493,26 @@ export_everything$Base_Models <- base_models
 
 
 ```{r}
+
 writexl::write_xlsx(export_everything, 'All_models_raw_lagged_inversed.xlsx')
+
+```
+
+
+# References (Packages) and System information
+
+```{r}
+report::report_system()
+
+```
+
+```{r results = 'asis'}
+report::report_packages()
+
+```
+
+```{r results = 'asis'}
+report::cite_packages()
 
 ```
 

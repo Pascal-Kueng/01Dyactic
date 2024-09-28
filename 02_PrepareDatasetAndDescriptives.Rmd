@@ -454,7 +454,7 @@ fit
 
 Checking reliability with different combinations of items. 
 
-```{r}
+```{r include=FALSE}
 
 best_reliability <- function(vars) {
   # Placeholder for results

@@ -1592,12 +1592,8 @@ library(cowplot)
 library(devtools)</code></pre>
 <pre><code>## Loading required package: usethis</code></pre>
 <pre class="r"><code>library(ggResidpanel)
-library(glmmTMB)</code></pre>
-<pre><code>## Warning in checkDepPackageVersion(dep_pkg = &quot;TMB&quot;): Package version inconsistency detected.
-## glmmTMB was built with TMB version 1.9.14
-## Current TMB version is 1.9.15
-## Please re-install glmmTMB from source or restore original &#39;TMB&#39; package (see &#39;?reinstalling&#39; for more information)</code></pre>
-<pre class="r"><code>library(DHARMa)</code></pre>
+library(glmmTMB)
+library(DHARMa)</code></pre>
 <pre><code>## This is DHARMa 0.4.6. For overview type &#39;?DHARMa&#39;. For recent changes, type news(package = &#39;DHARMa&#39;)</code></pre>
 <pre class="r"><code>library(ggeffects)</code></pre>
 <pre><code>## 
@@ -4661,6 +4657,180 @@ base_models</code></pre>
 <pre class="r"><code>export_everything$Base_Models &lt;- base_models</code></pre>
 <pre class="r"><code>writexl::write_xlsx(export_everything, &#39;All_models_raw_lagged.xlsx&#39;)</code></pre>
 </div>
+</div>
+<div id="references-packages-and-system-information" class="section level1">
+<h1>References (Packages) and System information</h1>
+<pre class="r"><code>report::report_system()</code></pre>
+<pre><code>## Analyses were conducted using the R Statistical language (version 4.4.1; R Core
+## Team, 2024) on Windows 11 x64 (build 22635)</code></pre>
+<pre class="r"><code>report::report_packages()</code></pre>
+<ul>
+<li>effectsize (version 0.8.9; Ben-Shachar MS et al., 2020)</li>
+<li>broom.mixed (version 0.2.9.5; Bolker B, Robinson D, 2024)</li>
+<li>glmmTMB (version 1.1.10; Brooks ME et al., 2017)</li>
+<li>Rcpp (version 1.0.13; Eddelbuettel D et al., 2024)</li>
+<li>ggResidpanel (version 0.3.0; Goode K, Rey K, 2019)</li>
+<li>lubridate (version 1.9.3; Grolemund G, Wickham H, 2011)</li>
+<li>Hmisc (version 5.1.3; Harrell Jr F, 2024)</li>
+<li>DHARMa (version 0.4.6; Hartig F, 2022)</li>
+<li>wbCorr (version 0.1.22; Küng P, 2023)</li>
+<li>ggeffects (version 1.7.1; Lüdecke D, 2018)</li>
+<li>parameters (version 0.22.2; Lüdecke D et al., 2020)</li>
+<li>performance (version 0.12.3; Lüdecke D et al., 2021)</li>
+<li>easystats (version 0.7.3; Lüdecke D et al., 2022)</li>
+<li>see (version 0.9.0; Lüdecke D et al., 2021)</li>
+<li>insight (version 0.20.4; Lüdecke D et al., 2019)</li>
+<li>bayestestR (version 0.14.0; Makowski D et al., 2019)</li>
+<li>modelbased (version 0.8.8; Makowski D et al., 2020)</li>
+<li>report (version 0.5.9; Makowski D et al., 2023)</li>
+<li>correlation (version 0.8.5; Makowski D et al., 2022)</li>
+<li>tibble (version 3.2.1; Müller K, Wickham H, 2023)</li>
+<li>datawizard (version 0.12.3; Patil I et al., 2022)</li>
+<li>nlme (version 3.1.164; Pinheiro J et al., 2023)</li>
+<li>R (version 4.4.1; R Core Team, 2024)</li>
+<li>MASS (version 7.3.60.2; Venables WN, Ripley BD, 2002)</li>
+<li>bmlm (version 1.3.15; Vuorre M, Bolger N, 2018)</li>
+<li>ggplot2 (version 3.5.1; Wickham H, 2016)</li>
+<li>forcats (version 1.0.0; Wickham H, 2023)</li>
+<li>stringr (version 1.5.1; Wickham H, 2023)</li>
+<li>tidyverse (version 2.0.0; Wickham H et al., 2019)</li>
+<li>usethis (version 3.0.0; Wickham H et al., 2024)</li>
+<li>dplyr (version 1.1.4; Wickham H et al., 2023)</li>
+<li>purrr (version 1.0.2; Wickham H, Henry L, 2023)</li>
+<li>readr (version 2.1.5; Wickham H et al., 2024)</li>
+<li>devtools (version 2.4.5; Wickham H et al., 2022)</li>
+<li>haven (version 2.5.4; Wickham H et al., 2023)</li>
+<li>scales (version 1.3.0; Wickham H et al., 2023)</li>
+<li>tidyr (version 1.3.1; Wickham H et al., 2024)</li>
+<li>cowplot (version 1.1.3; Wilke C, 2024)</li>
+</ul>
+<pre class="r"><code>report::cite_packages()</code></pre>
+<ul>
+<li>Ben-Shachar MS, Lüdecke D, Makowski D (2020). “effectsize:
+Estimation of Effect Size Indices and Standardized Parameters.”
+<em>Journal of Open Source Software</em>, <em>5</em>(56), 2815. <a href="doi:10.21105/joss.02815" class="uri">doi:10.21105/joss.02815</a>
+<a href="https://doi.org/10.21105/joss.02815" class="uri">https://doi.org/10.21105/joss.02815</a>, <a href="https://doi.org/10.21105/joss.02815" class="uri">https://doi.org/10.21105/joss.02815</a>.</li>
+<li>Bolker B, Robinson D (2024). <em>broom.mixed: Tidying Methods for
+Mixed Models</em>. R package version 0.2.9.5, <a href="https://github.com/bbolker/broom.mixed" class="uri">https://github.com/bbolker/broom.mixed</a>.</li>
+<li>Brooks ME, Kristensen K, van Benthem KJ, Magnusson A, Berg CW,
+Nielsen A, Skaug HJ, Maechler M, Bolker BM (2017). “glmmTMB Balances
+Speed and Flexibility Among Packages for Zero-inflated Generalized
+Linear Mixed Modeling.” <em>The R Journal</em>, <em>9</em>(2), 378-400.
+<a href="doi:10.32614/RJ-2017-066" class="uri">doi:10.32614/RJ-2017-066</a> <a href="https://doi.org/10.32614/RJ-2017-066" class="uri">https://doi.org/10.32614/RJ-2017-066</a>.</li>
+<li>Eddelbuettel D, Francois R, Allaire J, Ushey K, Kou Q, Russell N,
+Ucar I, Bates D, Chambers J (2024). <em>Rcpp: Seamless R and C++
+Integration</em>. R package version 1.0.13, <a href="https://dirk.eddelbuettel.com/code/rcpp.html" class="uri">https://dirk.eddelbuettel.com/code/rcpp.html</a>, <a href="https://github.com/RcppCore/Rcpp" class="uri">https://github.com/RcppCore/Rcpp</a>, <a href="https://www.rcpp.org" class="uri">https://www.rcpp.org</a>.
+Eddelbuettel D, François R (2011). “Rcpp: Seamless R and C++
+Integration.” <em>Journal of Statistical Software</em>, <em>40</em>(8),
+1-18. <a href="doi:10.18637/jss.v040.i08" class="uri">doi:10.18637/jss.v040.i08</a> <a href="https://doi.org/10.18637/jss.v040.i08" class="uri">https://doi.org/10.18637/jss.v040.i08</a>. Eddelbuettel D
+(2013). <em>Seamless R and C++ Integration with Rcpp</em>. Springer, New
+York. <a href="doi:10.1007/978-1-4614-6868-4" class="uri">doi:10.1007/978-1-4614-6868-4</a> <a href="https://doi.org/10.1007/978-1-4614-6868-4" class="uri">https://doi.org/10.1007/978-1-4614-6868-4</a>, ISBN
+978-1-4614-6867-7. Eddelbuettel D, Balamuta J (2018). “Extending R with
+C++: A Brief Introduction to Rcpp.” <em>The American Statistician</em>,
+<em>72</em>(1), 28-36. <a href="doi:10.1080/00031305.2017.1375990" class="uri">doi:10.1080/00031305.2017.1375990</a> <a href="https://doi.org/10.1080/00031305.2017.1375990" class="uri">https://doi.org/10.1080/00031305.2017.1375990</a>.</li>
+<li>Goode K, Rey K (2019). <em>ggResidpanel: Panels and Interactive
+Versions of Diagnostic Plots using ‘ggplot2’</em>. R package version
+0.3.0, <a href="https://goodekat.github.io/ggResidpanel/" class="uri">https://goodekat.github.io/ggResidpanel/</a>.</li>
+<li>Grolemund G, Wickham H (2011). “Dates and Times Made Easy with
+lubridate.” <em>Journal of Statistical Software</em>, <em>40</em>(3),
+1-25. <a href="https://www.jstatsoft.org/v40/i03/" class="uri">https://www.jstatsoft.org/v40/i03/</a>.</li>
+<li>Harrell Jr F (2024). <em>Hmisc: Harrell Miscellaneous</em>. R
+package version 5.1-3, <a href="https://hbiostat.org/R/Hmisc/" class="uri">https://hbiostat.org/R/Hmisc/</a>.</li>
+<li>Hartig F (2022). <em>DHARMa: Residual Diagnostics for Hierarchical
+(Multi-Level / Mixed) Regression Models</em>. R package version 0.4.6,
+<a href="http://florianhartig.github.io/DHARMa/" class="uri">http://florianhartig.github.io/DHARMa/</a>.</li>
+<li>Küng P (2023). <em>wbCorr: Bivariate Within- and Between-Cluster
+Correlations</em>. University of Zürich. R package version 0.1.22. <a href="https://github.com/Pascal-Kueng/wbCorr" class="uri">https://github.com/Pascal-Kueng/wbCorr</a>.</li>
+<li>Lüdecke D (2018). “ggeffects: Tidy Data Frames of Marginal Effects
+from Regression Models.” <em>Journal of Open Source Software</em>,
+<em>3</em>(26), 772. <a href="doi:10.21105/joss.00772" class="uri">doi:10.21105/joss.00772</a> <a href="https://doi.org/10.21105/joss.00772" class="uri">https://doi.org/10.21105/joss.00772</a>.</li>
+<li>Lüdecke D, Ben-Shachar M, Patil I, Makowski D (2020). “Extracting,
+Computing and Exploring the Parameters of Statistical Models using R.”
+<em>Journal of Open Source Software</em>, <em>5</em>(53), 2445. <a href="doi:10.21105/joss.02445" class="uri">doi:10.21105/joss.02445</a>
+<a href="https://doi.org/10.21105/joss.02445" class="uri">https://doi.org/10.21105/joss.02445</a>.</li>
+<li>Lüdecke D, Ben-Shachar M, Patil I, Waggoner P, Makowski D (2021).
+“performance: An R Package for Assessment, Comparison and Testing of
+Statistical Models.” <em>Journal of Open Source Software</em>,
+<em>6</em>(60), 3139. <a href="doi:10.21105/joss.03139" class="uri">doi:10.21105/joss.03139</a> <a href="https://doi.org/10.21105/joss.03139" class="uri">https://doi.org/10.21105/joss.03139</a>.</li>
+<li>Lüdecke D, Ben-Shachar M, Patil I, Wiernik B, Bacher E, Thériault R,
+Makowski D (2022). “easystats: Framework for Easy Statistical Modeling,
+Visualization, and Reporting.” <em>CRAN</em>. <a href="doi:10.32614/CRAN.package.easystats" class="uri">doi:10.32614/CRAN.package.easystats</a> <a href="https://doi.org/10.32614/CRAN.package.easystats" class="uri">https://doi.org/10.32614/CRAN.package.easystats</a>, R
+package, <a href="https://easystats.github.io/easystats/" class="uri">https://easystats.github.io/easystats/</a>.</li>
+<li>Lüdecke D, Patil I, Ben-Shachar M, Wiernik B, Waggoner P, Makowski D
+(2021). “see: An R Package for Visualizing Statistical Models.”
+<em>Journal of Open Source Software</em>, <em>6</em>(64), 3393. <a href="doi:10.21105/joss.03393" class="uri">doi:10.21105/joss.03393</a>
+<a href="https://doi.org/10.21105/joss.03393" class="uri">https://doi.org/10.21105/joss.03393</a>.</li>
+<li>Lüdecke D, Waggoner P, Makowski D (2019). “insight: A Unified
+Interface to Access Information from Model Objects in R.” <em>Journal of
+Open Source Software</em>, <em>4</em>(38), 1412. <a href="doi:10.21105/joss.01412" class="uri">doi:10.21105/joss.01412</a>
+<a href="https://doi.org/10.21105/joss.01412" class="uri">https://doi.org/10.21105/joss.01412</a>.</li>
+<li>Makowski D, Ben-Shachar M, Lüdecke D (2019). “bayestestR: Describing
+Effects and their Uncertainty, Existence and Significance within the
+Bayesian Framework.” <em>Journal of Open Source Software</em>,
+<em>4</em>(40), 1541. <a href="doi:10.21105/joss.01541" class="uri">doi:10.21105/joss.01541</a> <a href="https://doi.org/10.21105/joss.01541" class="uri">https://doi.org/10.21105/joss.01541</a>, <a href="https://joss.theoj.org/papers/10.21105/joss.01541" class="uri">https://joss.theoj.org/papers/10.21105/joss.01541</a>.</li>
+<li>Makowski D, Ben-Shachar M, Patil I, Lüdecke D (2020). “Estimation of
+Model-Based Predictions, Contrasts and Means.” <em>CRAN</em>. <a href="https://github.com/easystats/modelbased" class="uri">https://github.com/easystats/modelbased</a>.</li>
+<li>Makowski D, Lüdecke D, Patil I, Thériault R, Ben-Shachar M, Wiernik
+B (2023). “Automated Results Reporting as a Practical Tool to Improve
+Reproducibility and Methodological Best Practices Adoption.”
+<em>CRAN</em>. <a href="https://easystats.github.io/report/" class="uri">https://easystats.github.io/report/</a>.</li>
+<li>Makowski D, Wiernik B, Patil I, Lüdecke D, Ben-Shachar M (2022).
+“correlation: Methods for Correlation Analysis.” Version 0.8.3, <a href="https://CRAN.R-project.org/package=correlation" class="uri">https://CRAN.R-project.org/package=correlation</a>. Makowski
+D, Ben-Shachar M, Patil I, Lüdecke D (2020). “Methods and Algorithms for
+Correlation Analysis in R.” <em>Journal of Open Source Software</em>,
+<em>5</em>(51), 2306. <a href="doi:10.21105/joss.02306" class="uri">doi:10.21105/joss.02306</a> <a href="https://doi.org/10.21105/joss.02306" class="uri">https://doi.org/10.21105/joss.02306</a>, <a href="https://joss.theoj.org/papers/10.21105/joss.02306" class="uri">https://joss.theoj.org/papers/10.21105/joss.02306</a>.</li>
+<li>Müller K, Wickham H (2023). <em>tibble: Simple Data Frames</em>. R
+package version 3.2.1, <a href="https://github.com/tidyverse/tibble" class="uri">https://github.com/tidyverse/tibble</a>, <a href="https://tibble.tidyverse.org/" class="uri">https://tibble.tidyverse.org/</a>.</li>
+<li>Patil I, Makowski D, Ben-Shachar M, Wiernik B, Bacher E, Lüdecke D
+(2022). “datawizard: An R Package for Easy Data Preparation and
+Statistical Transformations.” <em>Journal of Open Source Software</em>,
+<em>7</em>(78), 4684. <a href="doi:10.21105/joss.04684" class="uri">doi:10.21105/joss.04684</a> <a href="https://doi.org/10.21105/joss.04684" class="uri">https://doi.org/10.21105/joss.04684</a>.</li>
+<li>Pinheiro J, Bates D, R Core Team (2023). <em>nlme: Linear and
+Nonlinear Mixed Effects Models</em>. R package version 3.1-164, <a href="https://CRAN.R-project.org/package=nlme" class="uri">https://CRAN.R-project.org/package=nlme</a>. Pinheiro JC,
+Bates DM (2000). <em>Mixed-Effects Models in S and S-PLUS</em>.
+Springer, New York. <a href="doi:10.1007/b98882" class="uri">doi:10.1007/b98882</a> <a href="https://doi.org/10.1007/b98882" class="uri">https://doi.org/10.1007/b98882</a>.</li>
+<li>R Core Team (2024). <em>R: A Language and Environment for
+Statistical Computing</em>. R Foundation for Statistical Computing,
+Vienna, Austria. <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</li>
+<li>Venables WN, Ripley BD (2002). <em>Modern Applied Statistics with
+S</em>, Fourth edition. Springer, New York. ISBN 0-387-95457-0, <a href="https://www.stats.ox.ac.uk/pub/MASS4/" class="uri">https://www.stats.ox.ac.uk/pub/MASS4/</a>.</li>
+<li>Vuorre M, Bolger N (2018). “Within-subject mediation analysis for
+experimental data in cognitive psychology and neuroscience.”
+<em>Behavior Research Methods</em>. <a href="doi:10.3758/s13428-017-0980-9" class="uri">doi:10.3758/s13428-017-0980-9</a> <a href="https://doi.org/10.3758/s13428-017-0980-9" class="uri">https://doi.org/10.3758/s13428-017-0980-9</a>. Vuorre M
+(2023). <em>bmlm: Bayesian Multilevel Mediation</em>. R package version
+1.3.15, <a href="https://CRAN.R-project.org/package=bmlm" class="uri">https://CRAN.R-project.org/package=bmlm</a>.</li>
+<li>Wickham H (2016). <em>ggplot2: Elegant Graphics for Data
+Analysis</em>. Springer-Verlag New York. ISBN 978-3-319-24277-4, <a href="https://ggplot2.tidyverse.org" class="uri">https://ggplot2.tidyverse.org</a>.</li>
+<li>Wickham H (2023). <em>forcats: Tools for Working with Categorical
+Variables (Factors)</em>. R package version 1.0.0, <a href="https://github.com/tidyverse/forcats" class="uri">https://github.com/tidyverse/forcats</a>, <a href="https://forcats.tidyverse.org/" class="uri">https://forcats.tidyverse.org/</a>.</li>
+<li>Wickham H (2023). <em>stringr: Simple, Consistent Wrappers for
+Common String Operations</em>. R package version 1.5.1, <a href="https://github.com/tidyverse/stringr" class="uri">https://github.com/tidyverse/stringr</a>, <a href="https://stringr.tidyverse.org" class="uri">https://stringr.tidyverse.org</a>.</li>
+<li>Wickham H, Averick M, Bryan J, Chang W, McGowan LD, François R,
+Grolemund G, Hayes A, Henry L, Hester J, Kuhn M, Pedersen TL, Miller E,
+Bache SM, Müller K, Ooms J, Robinson D, Seidel DP, Spinu V, Takahashi K,
+Vaughan D, Wilke C, Woo K, Yutani H (2019). “Welcome to the tidyverse.”
+<em>Journal of Open Source Software</em>, <em>4</em>(43), 1686. <a href="doi:10.21105/joss.01686" class="uri">doi:10.21105/joss.01686</a>
+<a href="https://doi.org/10.21105/joss.01686" class="uri">https://doi.org/10.21105/joss.01686</a>.</li>
+<li>Wickham H, Bryan J, Barrett M, Teucher A (2024). <em>usethis:
+Automate Package and Project Setup</em>. R package version 3.0.0, <a href="https://github.com/r-lib/usethis" class="uri">https://github.com/r-lib/usethis</a>, <a href="https://usethis.r-lib.org" class="uri">https://usethis.r-lib.org</a>.</li>
+<li>Wickham H, François R, Henry L, Müller K, Vaughan D (2023).
+<em>dplyr: A Grammar of Data Manipulation</em>. R package version 1.1.4,
+<a href="https://github.com/tidyverse/dplyr" class="uri">https://github.com/tidyverse/dplyr</a>, <a href="https://dplyr.tidyverse.org" class="uri">https://dplyr.tidyverse.org</a>.</li>
+<li>Wickham H, Henry L (2023). <em>purrr: Functional Programming
+Tools</em>. R package version 1.0.2, <a href="https://github.com/tidyverse/purrr" class="uri">https://github.com/tidyverse/purrr</a>, <a href="https://purrr.tidyverse.org/" class="uri">https://purrr.tidyverse.org/</a>.</li>
+<li>Wickham H, Hester J, Bryan J (2024). <em>readr: Read Rectangular
+Text Data</em>. R package version 2.1.5, <a href="https://github.com/tidyverse/readr" class="uri">https://github.com/tidyverse/readr</a>, <a href="https://readr.tidyverse.org" class="uri">https://readr.tidyverse.org</a>.</li>
+<li>Wickham H, Hester J, Chang W, Bryan J (2022). <em>devtools: Tools to
+Make Developing R Packages Easier</em>. R package version 2.4.5, <a href="https://github.com/r-lib/devtools" class="uri">https://github.com/r-lib/devtools</a>, <a href="https://devtools.r-lib.org/" class="uri">https://devtools.r-lib.org/</a>.</li>
+<li>Wickham H, Miller E, Smith D (2023). <em>haven: Import and Export
+‘SPSS’, ‘Stata’ and ‘SAS’ Files</em>. R package version 2.5.4, <a href="https://github.com/tidyverse/haven" class="uri">https://github.com/tidyverse/haven</a>, <a href="https://github.com/WizardMac/ReadStat" class="uri">https://github.com/WizardMac/ReadStat</a>, <a href="https://haven.tidyverse.org" class="uri">https://haven.tidyverse.org</a>.</li>
+<li>Wickham H, Pedersen T, Seidel D (2023). <em>scales: Scale Functions
+for Visualization</em>. R package version 1.3.0, <a href="https://github.com/r-lib/scales" class="uri">https://github.com/r-lib/scales</a>, <a href="https://scales.r-lib.org" class="uri">https://scales.r-lib.org</a>.</li>
+<li>Wickham H, Vaughan D, Girlich M (2024). <em>tidyr: Tidy Messy
+Data</em>. R package version 1.3.1, <a href="https://github.com/tidyverse/tidyr" class="uri">https://github.com/tidyverse/tidyr</a>, <a href="https://tidyr.tidyverse.org" class="uri">https://tidyr.tidyverse.org</a>.</li>
+<li>Wilke C (2024). <em>cowplot: Streamlined Plot Theme and Plot
+Annotations for ‘ggplot2’</em>. R package version 1.1.3, <a href="https://wilkelab.org/cowplot/" class="uri">https://wilkelab.org/cowplot/</a>.</li>
+</ul>
 </div>
 
 
