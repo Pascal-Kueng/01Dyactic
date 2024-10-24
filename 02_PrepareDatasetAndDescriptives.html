@@ -11,7 +11,7 @@
 
 <meta name="author" content="Pascal Küng, MSc (ORCID: 0000-0001-7346-9414), Corina Berli, PhD (ORCID: 0000-0002-5078-3539), Patrick S. Höhener, MSc (ORCID: 0000-0003-3635-2799), Robert Tobias, PhD (ORCID: 0000-0001-7972-122X), Urte Scholz, PhD (ORCID: 0000-0003-0184-5921)" />
 
-<meta name="date" content="2024-09-28" />
+<meta name="date" content="2024-10-24" />
 
 <title>Health-Related Social Influence Strategies in Overweight Romantic Couples: Daily Associations with Physical Activity and Affect for Targets and Actors</title>
 
@@ -1574,7 +1574,7 @@ Activity and Affect for Targets and Actors</h1>
 Berli, PhD (ORCID: 0000-0002-5078-3539), Patrick S. Höhener, MSc (ORCID:
 0000-0003-3635-2799), Robert Tobias, PhD (ORCID: 0000-0001-7972-122X),
 Urte Scholz, PhD (ORCID: 0000-0003-0184-5921)</h4>
-<h4 class="date">2024-09-28</h4>
+<h4 class="date">2024-10-24</h4>
 
 </div>
 
@@ -6768,9 +6768,6 @@ naff_agent_vars &lt;- c(&quot;pbypan02&quot;, &quot;pbypan04&quot;, &quot;pbypan
 paff_target_vars &lt;- c(&quot;sbypan03&quot;, &quot;sbypan14&quot;, &quot;sbypan09&quot;, &quot;sbypan12&quot;, &quot;sbypan16&quot;)
 naff_target_vars &lt;- c(&quot;sbypan02&quot;, &quot;sbypan04&quot;, &quot;sbypan07&quot;, &quot;sbypan15&quot;, &quot;sbypan19&quot;)
 
-naff_both_vars &lt;- c(naff_agent_vars, naff_target_vars)
-paff_both_vars &lt;- c(paff_agent_vars, paff_target_vars)
-
 
 sup_target_vars &lt;- c(&quot;sbysug99&quot;, &quot;sbysug98&quot;)
 sup_agent_vars &lt;- c(&quot;pbysug99&quot;, &quot;pbysug98&quot;)
@@ -6788,44 +6785,265 @@ print(round(fit$omegas, 2))</code></pre>
 <pre><code>##                est   se ci.lower ci.upper
 ## omega_within  0.61 0.05     0.51      0.7
 ## omega_between 0.94 0.03     0.88      1.0</code></pre>
-<pre class="r"><code># Positive Affect both
-fit &lt;- omega_multilevel(data = df, variables = paff_both_vars)
-print(round(fit$omegas, 2))</code></pre>
-<pre><code>##                est   se ci.lower ci.upper
-## omega_within  0.72 0.04     0.65      0.8
-## omega_between 0.83 0.14     0.56      1.0</code></pre>
-<pre class="r"><code># Negative Affect both
-fit &lt;- omega_multilevel(data = df, variables = paff_both_vars)
-print(round(fit$omegas, 2))</code></pre>
-<pre><code>##                est   se ci.lower ci.upper
-## omega_within  0.72 0.04     0.65      0.8
-## omega_between 0.83 0.14     0.56      1.0</code></pre>
 <pre class="r"><code># Positive Affect Agent
-#fit &lt;- omega_multilevel(data = df, variables = paff_agent_vars)
-#print(round(fit$omegas, 2))
-# Negative Affect Agent
-#fit &lt;- omega_multilevel(data = df, variables = naff_agent_vars)
-#print(round(fit$omegas, 2))
-# Positive Affect Target
-#fit &lt;- omega_multilevel(data = df, variables = paff_target_vars)
-#print(round(fit$omegas, 2))
-# Negative Affect Target
-#fit &lt;- omega_multilevel(data = df, variables = naff_target_vars)
-#print(round(fit$omegas, 2))
-
-
-fit &lt;- multilevelTools::omegaSEM(
+fit &lt;- omega_multilevel(data = df, variables = paff_agent_vars)
+print(round(fit$omegas, 2))</code></pre>
+<pre><code>##                est   se ci.lower ci.upper
+## omega_within  0.76 0.02     0.72     0.79
+## omega_between 0.88 0.03     0.82     0.94</code></pre>
+<pre class="r"><code># Negative Affect Agent
+fit &lt;- omega_multilevel(data = df, variables = naff_agent_vars)
+print(round(fit$omegas, 2))</code></pre>
+<pre><code>##                est   se ci.lower ci.upper
+## omega_within  0.72 0.02     0.68     0.77
+## omega_between 0.97 0.01     0.96     0.98</code></pre>
+<pre class="r"><code># Positive Affect Target
+fit &lt;- omega_multilevel(data = df, variables = paff_target_vars)
+print(round(fit$omegas, 2))</code></pre>
+<pre><code>##                est   se ci.lower ci.upper
+## omega_within  0.79 0.02     0.75     0.82
+## omega_between 0.93 0.02     0.90     0.96</code></pre>
+<pre class="r"><code># Negative Affect Target
+fit &lt;- omega_multilevel(data = df, variables = naff_target_vars)
+print(round(fit$omegas, 2))</code></pre>
+<pre><code>##                est   se ci.lower ci.upper
+## omega_within  0.70 0.03     0.65     0.75
+## omega_between 0.95 0.01     0.93     0.98</code></pre>
+<pre class="r"><code>fit &lt;- multilevelTools::omegaSEM(
   sup_target_vars,
   &#39;CoupleID&#39;,
   data = df
 )
 
-fit</code></pre>
+print(fit)</code></pre>
 <pre><code>## $Results
 ##            label   est ci.lower ci.upper
 ## 22  omega_within 0.857    0.841    0.873
 ## 28 omega_between 0.985    0.976    0.995</code></pre>
+<pre class="r"><code>fit &lt;- multilevelTools::omegaSEM(
+  sup_agent_vars,
+  &#39;CoupleID&#39;,
+  data = df
+)
+
+print(fit)</code></pre>
+<pre><code>## $Results
+##            label   est ci.lower ci.upper
+## 22  omega_within 0.805    0.783    0.826
+## 28 omega_between 0.978    0.965    0.990</code></pre>
 <p>Checking reliability with different combinations of items.</p>
+</div>
+</div>
+<div id="alternative-approach-to-reliability-rc" class="section level1">
+<h1>Alternative Approach to reliability (RC)</h1>
+<pre class="r"><code>reliability_of_change &lt;- function(id, time, varnames_construct, data) {
+  # Ensure varnames_construct is a character vector
+  if (!is.character(varnames_construct)) {
+    stop(&quot;varnames_construct must be a character vector of column names.&quot;)
+  }
+  
+  # Reshape data from wide to long format
+  data_longer &lt;- data %&gt;% 
+    select(
+      all_of(c(id, time, varnames_construct))
+    ) %&gt;%
+    pivot_longer(
+      cols = varnames_construct,
+      names_to = &quot;item&quot;,          # Create a new &#39;item&#39; column
+      values_to = &quot;y&quot;             # The corresponding item values
+    ) %&gt;%
+    mutate(
+      item = as.numeric(factor(item, levels = varnames_construct))
+    ) %&gt;%
+    rename(
+      id = !!sym(id),
+      time = !!sym(time)
+    )
+  
+  # Fit the three-way crossed random effects model (Person * Time * Item)
+  model &lt;- lmer(y ~ 1 + 
+                  (1 | time) + 
+                  (1 | id) + 
+                  (1 | item) +
+                  (1 | time:id) + 
+                  (1 | time:item) + 
+                  (1 | id:item),
+                data = data_longer,  # Use reshaped data (data_longer)
+                REML = TRUE)
+
+  
+  # Extract variance components
+  var_components &lt;- as.data.frame(VarCorr(model))
+  
+  # Variance components extraction
+  sigma_P &lt;- var_components[which(var_components$grp == &quot;id&quot;), &quot;vcov&quot;]  # Variance of Person
+  sigma_PI &lt;- var_components[which(var_components$grp == &quot;id:item&quot;), &quot;vcov&quot;]  # Variance of Person*Item
+  sigma_PD &lt;- var_components[which(var_components$grp == &quot;time:id&quot;), &quot;vcov&quot;]  # Variance of Person*Time (or Day)
+  sigma_residual &lt;- attr(VarCorr(model), &quot;sc&quot;)^2  # Residual variance
+  m &lt;- length(varnames_construct)  # number of items
+  
+  # Calculate Between-Person Reliability (R1f)
+  # R1f = (Person + (Person*Item/m)) / (Person + (Person*Item/m) + (Error/m))
+  R1f &lt;- (sigma_P + (sigma_PI / m)) / (sigma_P + (sigma_PI / m) + (sigma_residual / m))
+  
+  # Calculate Within-Person Reliability (Rc)
+  # Rc = (Person*Day) / (Person*Day + (Error/m))
+  Rc &lt;- sigma_PD / (sigma_PD + (sigma_residual / m))
+  
+  # Return a dataframe with both reliability estimates
+  reliability_df &lt;- data.frame(
+    `Within_Person_Reliability (RC)` = Rc,
+    `Between_Person_Reliability (R1f)` = R1f
+
+  )
+  
+  return(reliability_df)
+}
+
+
+
+reliability_of_change(&#39;CoupleID&#39;, &#39;sbyday&#39;, persuasion_vars, df)</code></pre>
+<pre><code>## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">Within_Person_Reliability..RC.</th>
+<th align="right">Between_Person_Reliability..R1f.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.6306865</td>
+<td align="right">0.727645</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code>reliability_of_change(&#39;CoupleID&#39;, &#39;sbyday&#39;, pressure_vars, df)</code></pre>
+<pre><code>## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">Within_Person_Reliability..RC.</th>
+<th align="right">Between_Person_Reliability..R1f.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.5769693</td>
+<td align="right">0.6487458</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code>reliability_of_change(&#39;CoupleID&#39;, &#39;sbyday&#39;, paff_agent_vars, df)</code></pre>
+<pre><code>## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">Within_Person_Reliability..RC.</th>
+<th align="right">Between_Person_Reliability..R1f.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.7423189</td>
+<td align="right">0.8061783</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code>reliability_of_change(&#39;CoupleID&#39;, &#39;sbyday&#39;, naff_agent_vars, df)</code></pre>
+<pre><code>## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">Within_Person_Reliability..RC.</th>
+<th align="right">Between_Person_Reliability..R1f.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.7156619</td>
+<td align="right">0.8210158</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code>reliability_of_change(&#39;CoupleID&#39;, &#39;sbyday&#39;, paff_target_vars, df)</code></pre>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">Within_Person_Reliability..RC.</th>
+<th align="right">Between_Person_Reliability..R1f.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.7636795</td>
+<td align="right">0.8670542</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code>reliability_of_change(&#39;CoupleID&#39;, &#39;sbyday&#39;, naff_target_vars, df)</code></pre>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">Within_Person_Reliability..RC.</th>
+<th align="right">Between_Person_Reliability..R1f.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.6835858</td>
+<td align="right">0.8427768</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code>reliability_of_change(&#39;CoupleID&#39;, &#39;sbyday&#39;, sup_agent_vars, df)</code></pre>
+<pre><code>## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">Within_Person_Reliability..RC.</th>
+<th align="right">Between_Person_Reliability..R1f.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.8057014</td>
+<td align="right">0.829026</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code>reliability_of_change(&#39;CoupleID&#39;, &#39;sbyday&#39;, sup_target_vars, df)</code></pre>
+<pre><code>## boundary (singular) fit: see help(&#39;isSingular&#39;)</code></pre>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">Within_Person_Reliability..RC.</th>
+<th align="right">Between_Person_Reliability..R1f.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.8549593</td>
+<td align="right">0.8443944</td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>The original study assigned couples to interventions vs. control
 groups. In this followup study, we would like to still have more or less
 equal group sizes.</p>
@@ -6852,7 +7070,6 @@ table(df$group) / 14</code></pre>
 <pre><code>## 
 ##   0   1 
 ## 686 700</code></pre>
-</div>
 <div id="centering-predictors" class="section level2">
 <h2>centering predictors</h2>
 <pre class="r"><code>df &lt;- isolate(df, by = &#39;CoupleID&#39;,

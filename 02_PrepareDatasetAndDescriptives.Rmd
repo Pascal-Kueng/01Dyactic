@@ -404,9 +404,6 @@ naff_agent_vars <- c("pbypan02", "pbypan04", "pbypan07", "pbypan15", "pbypan19")
 paff_target_vars <- c("sbypan03", "sbypan14", "sbypan09", "sbypan12", "sbypan16")
 naff_target_vars <- c("sbypan02", "sbypan04", "sbypan07", "sbypan15", "sbypan19")
 
-naff_both_vars <- c(naff_agent_vars, naff_target_vars)
-paff_both_vars <- c(paff_agent_vars, paff_target_vars)
-
 
 sup_target_vars <- c("sbysug99", "sbysug98")
 sup_agent_vars <- c("pbysug99", "pbysug98")
@@ -419,25 +416,19 @@ print(round(fit$omegas, 2))
 fit <- omega_multilevel(data = df, variables = pressure_vars)
 print(round(fit$omegas, 2))
 
-# Positive Affect both
-fit <- omega_multilevel(data = df, variables = paff_both_vars)
+# Positive Affect Agent
+fit <- omega_multilevel(data = df, variables = paff_agent_vars)
 print(round(fit$omegas, 2))
-# Negative Affect both
-fit <- omega_multilevel(data = df, variables = paff_both_vars)
+# Negative Affect Agent
+fit <- omega_multilevel(data = df, variables = naff_agent_vars)
+print(round(fit$omegas, 2))
+# Positive Affect Target
+fit <- omega_multilevel(data = df, variables = paff_target_vars)
+print(round(fit$omegas, 2))
+# Negative Affect Target
+fit <- omega_multilevel(data = df, variables = naff_target_vars)
 print(round(fit$omegas, 2))
 
-# Positive Affect Agent
-#fit <- omega_multilevel(data = df, variables = paff_agent_vars)
-#print(round(fit$omegas, 2))
-# Negative Affect Agent
-#fit <- omega_multilevel(data = df, variables = naff_agent_vars)
-#print(round(fit$omegas, 2))
-# Positive Affect Target
-#fit <- omega_multilevel(data = df, variables = paff_target_vars)
-#print(round(fit$omegas, 2))
-# Negative Affect Target
-#fit <- omega_multilevel(data = df, variables = naff_target_vars)
-#print(round(fit$omegas, 2))
 
 
 fit <- multilevelTools::omegaSEM(
@@ -446,7 +437,16 @@ fit <- multilevelTools::omegaSEM(
   data = df
 )
 
-fit
+print(fit)
+
+
+fit <- multilevelTools::omegaSEM(
+  sup_agent_vars,
+  'CoupleID',
+  data = df
+)
+
+print(fit)
 
 ```
 
@@ -490,6 +490,93 @@ best_reliability(persuasion_vars)
 best_reliability(pressure_vars)
 
 ```
+
+
+
+
+### Alternative Approach to reliability (RC)
+Here, it is not possible to use FIML. Thus, we prefere the method above. 
+
+```{r warning=FALSE}
+
+reliability_of_change <- function(id, time, varnames_construct, data) {
+  # Ensure varnames_construct is a character vector
+  if (!is.character(varnames_construct)) {
+    stop("varnames_construct must be a character vector of column names.")
+  }
+  
+  # Reshape data from wide to long format
+  data_longer <- data %>% 
+    select(
+      all_of(c(id, time, varnames_construct))
+    ) %>%
+    pivot_longer(
+      cols = varnames_construct,
+      names_to = "item",          # Create a new 'item' column
+      values_to = "y"             # The corresponding item values
+    ) %>%
+    mutate(
+      item = as.numeric(factor(item, levels = varnames_construct))
+    ) %>%
+    rename(
+      id = !!sym(id),
+      time = !!sym(time)
+    )
+  
+  # Fit the three-way crossed random effects model (Person * Time * Item)
+  model <- lmer(y ~ 1 + 
+                  (1 | time) + 
+                  (1 | id) + 
+                  (1 | item) +
+                  (1 | time:id) + 
+                  (1 | time:item) + 
+                  (1 | id:item),
+                data = data_longer,  # Use reshaped data (data_longer)
+                REML = TRUE)
+
+  
+  # Extract variance components
+  var_components <- as.data.frame(VarCorr(model))
+  
+  # Variance components extraction
+  sigma_P <- var_components[which(var_components$grp == "id"), "vcov"]  # Variance of Person
+  sigma_PI <- var_components[which(var_components$grp == "id:item"), "vcov"]  # Variance of Person*Item
+  sigma_PD <- var_components[which(var_components$grp == "time:id"), "vcov"]  # Variance of Person*Time (or Day)
+  sigma_residual <- attr(VarCorr(model), "sc")^2  # Residual variance
+  m <- length(varnames_construct)  # number of items
+  
+  # Calculate Between-Person Reliability (R1f)
+  # R1f = (Person + (Person*Item/m)) / (Person + (Person*Item/m) + (Error/m))
+  R1f <- (sigma_P + (sigma_PI / m)) / (sigma_P + (sigma_PI / m) + (sigma_residual / m))
+  
+  # Calculate Within-Person Reliability (Rc)
+  # Rc = (Person*Day) / (Person*Day + (Error/m))
+  Rc <- sigma_PD / (sigma_PD + (sigma_residual / m))
+  
+  # Return a dataframe with both reliability estimates
+  reliability_df <- data.frame(
+    `Within_Person_Reliability (RC)` = Rc,
+    `Between_Person_Reliability (R1f)` = R1f
+
+  )
+  
+  return(reliability_df)
+}
+
+
+
+reliability_of_change('CoupleID', 'sbyday', persuasion_vars, df)
+reliability_of_change('CoupleID', 'sbyday', pressure_vars, df)
+reliability_of_change('CoupleID', 'sbyday', paff_agent_vars, df)
+reliability_of_change('CoupleID', 'sbyday', naff_agent_vars, df)
+reliability_of_change('CoupleID', 'sbyday', paff_target_vars, df)
+reliability_of_change('CoupleID', 'sbyday', naff_target_vars, df)
+
+reliability_of_change('CoupleID', 'sbyday', sup_agent_vars, df)
+reliability_of_change('CoupleID', 'sbyday', sup_target_vars, df)
+
+```
+
 
 
 
