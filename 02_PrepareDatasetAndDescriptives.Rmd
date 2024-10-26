@@ -211,7 +211,7 @@ sample_df <- as.data.frame(report_table(infodfunlabelled))
 
 # export to excel
 
-writexl::write_xlsx(sample_df, "sample description.xlsx")
+writexl::write_xlsx(sample_df, "o1_SampleDescription.xlsx")
 
 ```
 
@@ -755,8 +755,8 @@ wbCorrObject_small <- wbCorr(df_cors_small, df$CoupleID)
 cor_matrix <- summary(wbCorrObject, which = 'wb')
 cor_matrix_small <- summary(wbCorrObject_small, 'wb')
 
-wbCorr::to_excel(cor_matrix, "correlation_matrices.xlsx")
-wbCorr::to_excel(cor_matrix_small, "correlation_matrices_small.xlsx")
+wbCorr::to_excel(cor_matrix, "o2_1_CorrelationMatricesFull.xlsx")
+wbCorr::to_excel(cor_matrix_small, "o2_2_CorrelationMatricesSmall.xlsx")
 
 cor_matrix
 cor_matrix_small
@@ -825,7 +825,7 @@ saveRDS(df_subset, file = 'DataSet_Subset.rds')
 ```
 
 
-
+# References (Packages) and System information
 
 ```{r}
 report::report_system()

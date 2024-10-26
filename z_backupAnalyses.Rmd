@@ -341,6 +341,254 @@ process_coefficients <- function(df) {
 
 ```
 
+## Models
+
+### Models for TARGET
+
+#### Positive Affect - Target
+
+Due to convergence Issue, AR1 had to be replaced with an unstructured
+error covariance matrix.
+
+```{r base1}
+# Base Model
+posaff_target <- lme(
+    fixed = Paff_target~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb,
+    data = as.data.frame(df),
+    random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+    #correlation = corAR1(form = ~ 1 | CoupleID),
+    na.action = na.omit,
+    control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+
+check_singularity(posaff_target)
+performance::check_model(posaff_target)
+
+```
+
+```{r evalbase1}
+
+posaff_target_rep <- full_report(posaff_target, order_rep) 
+
+
+# prepare to save to excel
+all_models <- list(posaff_target_rep = posaff_target_rep)
+
+```
+
+#### Negative Affect - Target
+
+Due to convergence Issue, AR1 had to be replaced with an unstructured
+error covariance matrix.
+
+```{r base2}
+### Base model for negative affect target
+negaff_target <- lme(
+  fixed = Naff_target ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb,
+  data = as.data.frame(df),
+  random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+  #correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+
+check_singularity(negaff_target)
+performance::check_model(negaff_target)
+```
+
+```{r evalbase2}
+negaff_target_rep <- full_report(negaff_target, order=order_rep)
+negaff_target_rep
+
+# Add to list
+all_models[['negaff_target_rep']] <- negaff_target_rep
+```
+
+#### MVPA - Target
+
+```{r mvpa1}
+mean(df$sbwmvpa01, na.rm=T)
+var(df$sbwmvpa01, na.rm=T)
+hist(df$sbwmvpa01)
+```
+
+Due to the distribution of the data, a poisson-regression was
+considered. However, the data seems to be overdispersed (variance
+greater than mean). Therefore, a quasi-poisson modelling approach was
+selected to model the overdispersion.
+
+```{r mvpa2}
+mvpa_target <- glmmTMB(
+  sbwmvpa01 ~
+    PSC_agent_cw + NSC_agent_cw +
+    sbyday + weeknd2 +
+    PSC_agent_cb + NSC_agent_cb + 
+    sbwwear_cw + sbwwear_cb + 
+    
+    (1 + PSC_agent_cw + NSC_agent_cw | CoupleID) +
+    ar1(factor(sbyday) - 1 | CoupleID),
+    family = nbinom1,
+    data = df,
+    control = glmmTMBControl(optArgs = list(iter.max = 1e4, eval.max = 1e4))
+)
+check_singularity(mvpa_target)
+
+simResids <- simulateResiduals(mvpa_target, nSim=1005)
+plot(simResids)
+```
+
+```{r mvpa3}
+
+mvpa_target_rep <- full_report(mvpa_target, order_rep)
+mvpa_target_rep
+
+# extend list
+
+all_models[['mvpa_target_rep']] <- mvpa_target_rep
+
+```
+
+Note, that fixed effects and their CI have been exponentiated,
+representing now odds ratios. SE have been scaled. Random effects are
+still on the log-scale and represent the variability.
+
+### Models for AGENT
+
+How is the use of persuasion and pressure associated with outcomes in
+the user?
+
+#### Positive affect - Agent
+
+```{r posaff1}
+posaff_agent <- lme(
+  fixed = Paff_agent ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb,
+  data = as.data.frame(df),
+  random = ~ NSC_agent_cw + PSC_agent_cw | CoupleID,
+  correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                      maxIter = 1e4,
+                      msMaxEval = 1e4)
+)
+check_singularity(posaff_agent)
+performance::check_model(posaff_agent)
+```
+
+```{r posaff2}
+
+posaff_agent_rep <- full_report(posaff_agent,order=order_rep)
+posaff_agent_rep
+
+# Add to list
+
+all_models[['posaff_agent_rep']] <- posaff_agent_rep
+
+```
+
+#### Negative Affect - Agent
+
+Ar1 had to be removed to achieve convergence.
+
+```{r posaff3}
+### Base model for negative affect target
+# Specifying model for Negative Affect
+negaff_agent <- lme(
+  fixed = Naff_agent ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb,
+  data = as.data.frame(df),
+  random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+  #correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+check_singularity(negaff_agent)
+performance::check_model(negaff_agent)
+```
+
+```{r negaff1}
+negaff_agent_rep <- full_report(negaff_agent,order=order_rep)
+negaff_agent_rep
+
+# Add to list
+
+all_models[['negaff_agent_rep']] <- negaff_agent_rep
+```
+
+#### MVPA - Agent
+
+```{r mvpa_agent1}
+mean(df$pbwmvpa01, na.rm=T)
+var(df$pbwmvpa01, na.rm=T)
+hist(df$pbwmvpa01)
+```
+
+Due to the distribution of the data, a poisson-regression was
+considered. However, the data seems to be overdispersed (variance
+greater than mean). Therefore, a quasi-poisson modelling approach was
+selected to model the overdispersion.
+
+Did not converge. Our preferred alternative (no AR1) does not converge
+either. We select the next best model, which drops both the AR1 term, as
+well as the random slope for NSC, which was zero.
+
+```{r mvpa_agent2}
+# Base Model (not converging)
+mvpa_partner <- glmmTMB(
+    pbwmvpa01 ~
+      PSC_agent_cw + NSC_agent_cw +
+      sbyday + weeknd2 +
+      PSC_agent_cb + NSC_agent_cb + 
+      pbwwear_cw + pbwwear_cb + 
+      (1 + PSC_agent_cw | CoupleID),
+    family = nbinom1,
+    data = df,
+    control = glmmTMBControl(optimizer = nlminb, 
+                             optArgs = list(iter.max = 1e4, 
+                                            eval.max = 1e4))
+)
+check_singularity(mvpa_partner)
+simResids <- simulateResiduals(mvpa_partner, nSim = 1005)
+plot(simResids)
+```
+
+```{r mvpa_agent3}
+
+mvpa_agent_rep <- full_report(mvpa_partner, order= order_rep)
+mvpa_agent_rep
+
+# Add to list
+all_models[['mvpa_agent_rep']] <- mvpa_agent_rep
+
+
+```
+
+Note, that fixed effects and their CIs have been exponentiated,
+representing now odds ratios. SE have been scaled. Random effects are
+still on the log-scale and represent the variability.
+
+```{r mvpa_agent4}
+# Save list to file
+#writexl::write_xlsx(all_models, "All_Models.xlsx")
+```
+
+# Report everything again side by side for a cleaner appearance.
 
 ## FUNCTION TO REPORT EVERYTHING SIDE BY SIDE
 
@@ -390,12 +638,51 @@ report_side_by_side <- function(models, order, model_names) {
 
 ```
 
+## Rerport all Main Models Side by Side
+
+```{r}
+
+export_everything <- list()
+
+base_models <- report_side_by_side(
+  models = list(
+    posaff_agent, posaff_target, 
+    negaff_agent, negaff_target,
+    mvpa_partner, mvpa_target
+  ),
+  order <- order_rep,
+  model_names = list(
+    'Posaff Agent', 'Posaff Target', 
+    'Negaff Agent', 'Negaff Target', 
+    'MVPA Agent', 'MVPA Target'
+  )
+)
+
+base_models
+
+export_everything$Base_Models <- base_models
+
+```
+
+```{r}
+
+mvpa_target_original <- mvpa_target
+
+```
 
 # Sensitivity Analyses
 
+Between person variables - Between Centred Social Support (Sup_agent_cb,
+Sup_target_cb) - Between Centred Time Spent Together (time_spent_cb) -
+Experimental Groups (group) - Relationship Duration (reldur) - Age (sage,
+page) - BMI (sbmi, pbmi) - sex (sb0sex01, pb0sex01) - children
+(sb0kih01)
 
 
-## Time-Invariant Covariates
+
+Within-person variables - Sup_agent_cw, sup_target_cw - time_spent_cw
+
+## Introcuding ALL control variables
 
 ### Positive Affect - Target
 
@@ -407,21 +694,15 @@ posaff_target <- lme(
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
       
-      # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
+      # Between covariates
+      Sup_agent_cb +Sup_target_cb +
+      time_spent_cb + 
       group +
       reldur_cb + 
       sage +
-      page +
       sbmi +
-      pbmi +
       sb0sex01 +
-      sb0kih01
+      sb0kih01 +
       
       # individual covariates agent Within
       #intention_agent_lagged_cw + 
@@ -429,7 +710,6 @@ posaff_target <- lme(
       #plan_agent_lagged_cw + 
       #risk_perception_agent_cw +
       #perceived_benfeits_agent_cw +
-      
       # individual covariates target Within
       #intention_target_lagged_cw + 
       #self_efficacy_target_lagged_cw + 
@@ -443,19 +723,20 @@ posaff_target <- lme(
       #plan_agent_lagged_cb + 
       #risk_perception_agent_cb +
       #perceived_benfeits_agent_cb +
-      
       # individual covariates target Between
       #intention_target_lagged_cb + 
       #self_efficacy_target_lagged_cb + 
       #plan_target_lagged_cb + 
       #risk_perception_target_cb +
-      #perceived_benfeits_target_cb
+      #perceived_benfeits_target_cb +
       
-      , data = as.data.frame(df),
+      # Support
+      Sup_agent_cw + Sup_target_cw + time_spent_cw,
+    data = as.data.frame(df),
     random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
     #correlation = corAR1(form = ~ 1 | CoupleID),
-    na.action = na.omit
-    , control = lmeControl(opt='optim',
+    na.action = na.omit,
+    control = lmeControl(opt='optim',
                          maxIter = 1e4,
                          msMaxEval = 1e4)
 )
@@ -473,22 +754,15 @@ negaff_target <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-  
-    # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
+    # Between covariates
+      Sup_agent_cb +Sup_target_cb +
+      time_spent_cb + 
       group +
       reldur_cb + 
       sage +
-      page +
       sbmi +
-      pbmi +
       sb0sex01 +
-      sb0kih01
+      sb0kih01 +
       
       # individual covariates agent Within
       #intention_agent_lagged_cw + 
@@ -496,7 +770,6 @@ negaff_target <- lme(
       #plan_agent_lagged_cw + 
       #risk_perception_agent_cw +
       #perceived_benfeits_agent_cw +
-      
       # individual covariates target Within
       #intention_target_lagged_cw + 
       #self_efficacy_target_lagged_cw + 
@@ -510,14 +783,17 @@ negaff_target <- lme(
       #plan_agent_lagged_cb + 
       #risk_perception_agent_cb +
       #perceived_benfeits_agent_cb +
-      
       # individual covariates target Between
       #intention_target_lagged_cb + 
       #self_efficacy_target_lagged_cb + 
       #plan_target_lagged_cb + 
       #risk_perception_target_cb +
-      #perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+      #perceived_benfeits_target_cb +
+      
+      # Support
+      Sup_agent_cw + Sup_target_cw + time_spent_cw,
+  
+  data = as.data.frame(df),
   random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
   #correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -539,57 +815,56 @@ mvpa_target <- glmmTMB(
     PSC_agent_cb + NSC_agent_cb + 
     sbwwear_cw + sbwwear_cb + 
     
-        # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
+    # Between covariates
+      Sup_agent_cb +Sup_target_cb +
+      time_spent_cb + 
       group +
       reldur_cb + 
       sage +
-      page +
       sbmi +
-      pbmi +
       sb0sex01 +
       sb0kih01 +
       
       # individual covariates agent Within
-      #intention_agent_lagged_cw + 
-      #self_efficacy_agent_lagged_cw + 
-      #plan_agent_lagged_cw + 
-      #risk_perception_agent_cw +
-      #perceived_benfeits_agent_cw +
-      
+      intention_agent_lagged_cw + 
+      self_efficacy_agent_lagged_cw + 
+      plan_agent_lagged_cw + 
+      risk_perception_agent_cw +
+      perceived_benfeits_agent_cw +
       # individual covariates target Within
-      #intention_target_lagged_cw + 
-      #self_efficacy_target_lagged_cw + 
-      #plan_target_lagged_cw + 
-      #risk_perception_target_cw +
-      #perceived_benfeits_target_cw +
+      intention_target_lagged_cw + 
+      self_efficacy_target_lagged_cw + 
+      plan_target_lagged_cw + 
+      risk_perception_target_cw +
+      perceived_benfeits_target_cw +
       
       # individual covariates agent Between
-      #intention_agent_lagged_cb + 
-      #self_efficacy_agent_lagged_cb + 
-      #plan_agent_lagged_cb + 
-      #risk_perception_agent_cb +
-      #perceived_benfeits_agent_cb +
-      
+      intention_agent_lagged_cb + 
+      self_efficacy_agent_lagged_cb + 
+      plan_agent_lagged_cb + 
+      risk_perception_agent_cb +
+      perceived_benfeits_agent_cb +
       # individual covariates target Between
-      #intention_target_lagged_cb + 
-      #self_efficacy_target_lagged_cb + 
-      #plan_target_lagged_cb + 
-      #risk_perception_target_cb +
-      #perceived_benfeits_target_cb +
-
-    (1 + PSC_agent_cw + NSC_agent_cw | CoupleID) + 
-    ar1(factor(sbyday) - 1 | CoupleID),
-    , family = nbinom1,
-    data = df
-  , control = glmmTMBControl(optArgs = list(iter.max = 1e4, eval.max = 1e4))
+      intention_target_lagged_cb + 
+      self_efficacy_target_lagged_cb + 
+      plan_target_lagged_cb + 
+      risk_perception_target_cb +
+      perceived_benfeits_target_cb +
+      
+      # Support
+      Sup_agent_cw + Sup_target_cw + time_spent_cw +
+    
+    (1 | CoupleID),
+    family = nbinom1,
+    data = df,
+    control = glmmTMBControl(optArgs = list(iter.max = 1e4, eval.max = 1e4))
 )
 check_singularity(mvpa_target)
+
+
+# get the p-value for our paper
+a <- summary(mvpa_target)
+round(a$coefficients$cond['NSC_agent_cw', 4], 3)
 
 ```
 
@@ -601,22 +876,15 @@ posaff_agent <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-    
-        # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
+    # Between covariates
+      Sup_agent_cb +Sup_target_cb +
+      time_spent_cb + 
       group +
       reldur_cb + 
-      sage +
       page +
-      sbmi +
       pbmi +
-      sb0sex01 +
-      sb0kih01
+      pb0sex01 +
+      pb0kih01 +
       
       # individual covariates agent Within
       #intention_agent_lagged_cw + 
@@ -624,7 +892,6 @@ posaff_agent <- lme(
       #plan_agent_lagged_cw + 
       #risk_perception_agent_cw +
       #perceived_benfeits_agent_cw +
-      
       # individual covariates target Within
       #intention_target_lagged_cw + 
       #self_efficacy_target_lagged_cw + 
@@ -638,14 +905,17 @@ posaff_agent <- lme(
       #plan_agent_lagged_cb + 
       #risk_perception_agent_cb +
       #perceived_benfeits_agent_cb +
-      
       # individual covariates target Between
       #intention_target_lagged_cb + 
       #self_efficacy_target_lagged_cb + 
       #plan_target_lagged_cb + 
       #risk_perception_target_cb +
-      #perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+      #perceived_benfeits_target_cb +
+      
+      # Support
+      Sup_agent_cw + Sup_target_cw + time_spent_cw,
+  
+  data = as.data.frame(df),
   random = ~ NSC_agent_cw + PSC_agent_cw | CoupleID,
   correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -665,22 +935,15 @@ negaff_agent <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-    
-        # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
+    # Between covariates
+      Sup_agent_cb +Sup_target_cb +
+      time_spent_cb + 
       group +
       reldur_cb + 
-      sage +
       page +
-      sbmi +
       pbmi +
-      sb0sex01 +
-      sb0kih01
+      pb0sex01 +
+      pb0kih01 +
       
       # individual covariates agent Within
       #intention_agent_lagged_cw + 
@@ -688,7 +951,6 @@ negaff_agent <- lme(
       #plan_agent_lagged_cw + 
       #risk_perception_agent_cw +
       #perceived_benfeits_agent_cw +
-      
       # individual covariates target Within
       #intention_target_lagged_cw + 
       #self_efficacy_target_lagged_cw + 
@@ -702,14 +964,17 @@ negaff_agent <- lme(
       #plan_agent_lagged_cb + 
       #risk_perception_agent_cb +
       #perceived_benfeits_agent_cb +
-      
       # individual covariates target Between
       #intention_target_lagged_cb + 
       #self_efficacy_target_lagged_cb + 
       #plan_target_lagged_cb + 
       #risk_perception_target_cb +
-      #perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+      #perceived_benfeits_target_cb +
+      
+      # Support
+      Sup_agent_cw + Sup_target_cw + time_spent_cw,
+  
+  data = as.data.frame(df),
   random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
   #correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -730,21 +995,91 @@ mvpa_partner <- glmmTMB(
       PSC_agent_cb + NSC_agent_cb + 
       pbwwear_cw + pbwwear_cb + 
       
-          # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
+      # Between covariates
+      Sup_agent_cb +Sup_target_cb +
+      time_spent_cb + 
       group +
       reldur_cb + 
-      sage +
       page +
-      sbmi +
       pbmi +
-      sb0sex01 +
-      sb0kih01 +
+      pb0sex01 +
+      pb0kih01 +
+      
+      # individual covariates agent Within
+      intention_agent_lagged_cw + 
+      self_efficacy_agent_lagged_cw + 
+      plan_agent_lagged_cw + 
+      risk_perception_agent_cw +
+      perceived_benfeits_agent_cw +
+      # individual covariates target Within
+      intention_target_lagged_cw + 
+      self_efficacy_target_lagged_cw + 
+      plan_target_lagged_cw + 
+      risk_perception_target_cw +
+      perceived_benfeits_target_cw +
+      
+      # individual covariates agent Between
+      intention_agent_lagged_cb + 
+      self_efficacy_agent_lagged_cb + 
+      plan_agent_lagged_cb + 
+      risk_perception_agent_cb +
+      perceived_benfeits_agent_cb +
+      # individual covariates target Between
+      intention_target_lagged_cb + 
+      self_efficacy_target_lagged_cb + 
+      plan_target_lagged_cb + 
+      risk_perception_target_cb +
+      perceived_benfeits_target_cb +
+      
+      # Support
+      Sup_agent_cw + Sup_target_cw + time_spent_cw +
+      
+      (1 + PSC_agent_cw | CoupleID),
+    family = nbinom1,
+    data = df,
+    control = glmmTMBControl(optimizer = nlminb, 
+                             optArgs = list(iter.max = 1e4, 
+                                            eval.max = 1e4))
+)
+check_singularity(mvpa_partner)
+```
+
+### Rerporting the results side by side
+
+```{r}
+ALL_covariates <- report_side_by_side(
+  models = list(
+    posaff_agent, posaff_target, 
+    negaff_agent, negaff_target,
+    mvpa_partner, mvpa_target
+  ),
+  order <- order_sens,
+  model_names = list(
+    'Posaff Agent', 'Posaff Target', 
+    'Negaff Agent', 'Negaff Target', 
+    'MVPA Agent', 'MVPA Target'
+  )
+)
+
+ALL_covariates
+
+export_everything$ALL_covariates <- ALL_covariates
+
+```
+
+
+
+## Remove control variables that make a difference in the results.
+
+### Positive Affect - Target
+
+```{r}
+
+posaff_target <- lme(
+    fixed = Paff_target~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb +
       
       # individual covariates agent Within
       #intention_agent_lagged_cw + 
@@ -752,7 +1087,6 @@ mvpa_partner <- glmmTMB(
       #plan_agent_lagged_cw + 
       #risk_perception_agent_cw +
       #perceived_benfeits_agent_cw +
-      
       # individual covariates target Within
       #intention_target_lagged_cw + 
       #self_efficacy_target_lagged_cw + 
@@ -766,13 +1100,304 @@ mvpa_partner <- glmmTMB(
       #plan_agent_lagged_cb + 
       #risk_perception_agent_cb +
       #perceived_benfeits_agent_cb +
-      
       # individual covariates target Between
       #intention_target_lagged_cb + 
       #self_efficacy_target_lagged_cb + 
       #plan_target_lagged_cb + 
       #risk_perception_target_cb +
       #perceived_benfeits_target_cb +
+      
+      # Social Between Person covariates
+      Sup_agent_cb +Sup_target_cb +
+      time_spent_cb + 
+      group +
+      reldur_cb + 
+      sage +
+      sbmi +
+      sb0sex01 +
+      sb0kih01,
+    data = as.data.frame(df),
+    random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+    #correlation = corAR1(form = ~ 1 | CoupleID),
+    na.action = na.omit,
+    control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+
+check_singularity(posaff_target)
+
+```
+
+### Negative Affect - Target
+
+```{r}
+
+negaff_target <- lme(
+  fixed = Naff_target ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb +
+    
+    # individual covariates agent Within
+      #intention_agent_lagged_cw + 
+      #self_efficacy_agent_lagged_cw + 
+      #plan_agent_lagged_cw + 
+      #risk_perception_agent_cw +
+      #perceived_benfeits_agent_cw +
+      # individual covariates target Within
+      #intention_target_lagged_cw + 
+      #self_efficacy_target_lagged_cw + 
+      #plan_target_lagged_cw + 
+      #risk_perception_target_cw +
+      #perceived_benfeits_target_cw +
+      
+      # individual covariates agent Between
+      #intention_agent_lagged_cb + 
+      #self_efficacy_agent_lagged_cb + 
+      #plan_agent_lagged_cb + 
+      #risk_perception_agent_cb +
+      #perceived_benfeits_agent_cb +
+      # individual covariates target Between
+      #intention_target_lagged_cb + 
+      #self_efficacy_target_lagged_cb + 
+      #plan_target_lagged_cb + 
+      #risk_perception_target_cb +
+      #perceived_benfeits_target_cb +
+      
+      # Social Between Person covariates
+    Sup_agent_cb +Sup_target_cb +
+    time_spent_cb + 
+    group +
+    reldur_cb + 
+    sage +
+    sbmi +
+    sb0sex01 +
+    sb0kih01,
+  data = as.data.frame(df),
+  random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+  #correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+
+check_singularity(negaff_target)
+```
+
+### MVPA - Target
+
+```{r}
+mvpa_target <- glmmTMB(
+  sbwmvpa01 ~
+    PSC_agent_cw + NSC_agent_cw +
+    sbyday + weeknd2 +
+    PSC_agent_cb + NSC_agent_cb + 
+    sbwwear_cw + sbwwear_cb + 
+    
+    # individual covariates agent Within
+      intention_agent_lagged_cw + 
+      self_efficacy_agent_lagged_cw + 
+      plan_agent_lagged_cw + 
+      risk_perception_agent_cw +
+      perceived_benfeits_agent_cw +
+      # individual covariates target Within
+      intention_target_lagged_cw + 
+      self_efficacy_target_lagged_cw + 
+      plan_target_lagged_cw + 
+      risk_perception_target_cw +
+      perceived_benfeits_target_cw +
+      
+      # individual covariates agent Between
+      intention_agent_lagged_cb + 
+      self_efficacy_agent_lagged_cb + 
+      plan_agent_lagged_cb + 
+      risk_perception_agent_cb +
+      perceived_benfeits_agent_cb +
+      # individual covariates target Between
+      intention_target_lagged_cb + 
+      self_efficacy_target_lagged_cb + 
+      plan_target_lagged_cb + 
+      risk_perception_target_cb +
+      perceived_benfeits_target_cb +
+      
+      # Social Between Person covariates
+    Sup_agent_cb +Sup_target_cb +
+    time_spent_cb + 
+    group +
+    reldur_cb + 
+    sage  +
+    sbmi  +
+    sb0sex01 +
+    sb0kih01 +
+    
+    (1 + PSC_agent_cw + NSC_agent_cw | CoupleID) +
+    ar1(factor(sbyday) - 1 | CoupleID),
+    family = nbinom1,
+    data = df,
+    control = glmmTMBControl(optArgs = list(iter.max = 1e4, eval.max = 1e4))
+)
+check_singularity(mvpa_target)
+
+```
+
+### Positive affect - Agent
+
+```{r}
+posaff_agent <- lme(
+  fixed = Paff_agent ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb +
+    
+    # individual covariates agent Within
+      #intention_agent_lagged_cw + 
+      #self_efficacy_agent_lagged_cw + 
+      #plan_agent_lagged_cw + 
+      #risk_perception_agent_cw +
+      #perceived_benfeits_agent_cw +
+      # individual covariates target Within
+      #intention_target_lagged_cw + 
+      #self_efficacy_target_lagged_cw + 
+      #plan_target_lagged_cw + 
+      #risk_perception_target_cw +
+      #perceived_benfeits_target_cw +
+      
+      # individual covariates agent Between
+      #intention_agent_lagged_cb + 
+      #self_efficacy_agent_lagged_cb + 
+      #plan_agent_lagged_cb + 
+      #risk_perception_agent_cb +
+      #perceived_benfeits_agent_cb +
+      # individual covariates target Between
+      #intention_target_lagged_cb + 
+      #self_efficacy_target_lagged_cb + 
+      #plan_target_lagged_cb + 
+      #risk_perception_target_cb +
+      #perceived_benfeits_target_cb +
+      
+      # Social Between Person covariates
+    Sup_agent_cb +Sup_target_cb +
+    time_spent_cb + 
+    group +
+    reldur_cb + 
+    page  +
+    pbmi  +
+    pb0sex01 +
+    sb0kih01,
+  data = as.data.frame(df),
+  random = ~ NSC_agent_cw + PSC_agent_cw | CoupleID,
+  correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                      maxIter = 1e4,
+                      msMaxEval = 1e4)
+)
+check_singularity(posaff_agent)
+```
+
+### Negative Affect - Agent
+
+```{r}
+
+negaff_agent <- lme(
+  fixed = Naff_agent ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb +
+    
+    # individual covariates agent Within
+      #intention_agent_lagged_cw + 
+      #self_efficacy_agent_lagged_cw + 
+      #plan_agent_lagged_cw + 
+      #risk_perception_agent_cw +
+      #perceived_benfeits_agent_cw +
+      # individual covariates target Within
+      #intention_target_lagged_cw + 
+      #self_efficacy_target_lagged_cw + 
+      #plan_target_lagged_cw + 
+      #risk_perception_target_cw +
+      #perceived_benfeits_target_cw +
+      
+      # individual covariates agent Between
+      #intention_agent_lagged_cb + 
+      #self_efficacy_agent_lagged_cb + 
+      #plan_agent_lagged_cb + 
+      #risk_perception_agent_cb +
+      #perceived_benfeits_agent_cb +
+      # individual covariates target Between
+      #intention_target_lagged_cb + 
+      #self_efficacy_target_lagged_cb + 
+      #plan_target_lagged_cb + 
+      #risk_perception_target_cb +
+      #perceived_benfeits_target_cb +
+      
+      # Social Between Person covariates
+    Sup_agent_cb +Sup_target_cb +
+    time_spent_cb + 
+    group +
+    reldur_cb + 
+    page  +
+    pbmi  +
+    pb0sex01 +
+    sb0kih01,
+  data = as.data.frame(df),
+  random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+  #correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+check_singularity(negaff_agent)
+```
+
+### MVPA - Agent
+
+```{r}
+mvpa_partner <- glmmTMB(
+    pbwmvpa01 ~
+      PSC_agent_cw + NSC_agent_cw +
+      sbyday + weeknd2 +
+      PSC_agent_cb + NSC_agent_cb + 
+      pbwwear_cw + pbwwear_cb + 
+      
+      # individual covariates agent Within
+      intention_agent_lagged_cw + 
+      self_efficacy_agent_lagged_cw + 
+      plan_agent_lagged_cw + 
+      risk_perception_agent_cw +
+      perceived_benfeits_agent_cw +
+      # individual covariates target Within
+      intention_target_lagged_cw + 
+      self_efficacy_target_lagged_cw + 
+      plan_target_lagged_cw + 
+      risk_perception_target_cw +
+      perceived_benfeits_target_cw +
+      
+      # individual covariates agent Between
+      intention_agent_lagged_cb + 
+      self_efficacy_agent_lagged_cb + 
+      plan_agent_lagged_cb + 
+      risk_perception_agent_cb +
+      perceived_benfeits_agent_cb +
+      # individual covariates target Between
+      intention_target_lagged_cb + 
+      self_efficacy_target_lagged_cb + 
+      plan_target_lagged_cb + 
+      risk_perception_target_cb +
+      perceived_benfeits_target_cb +
+      
+      # Social Between Person covariates
+      Sup_agent_cb +Sup_target_cb +
+      time_spent_cb + 
+      group +
+      reldur_cb + 
+      page  +
+      pbmi  +
+      pb0sex01 +
+      sb0kih01 +
       
       (1 + PSC_agent_cw | CoupleID),
     family = nbinom1,
@@ -803,18 +1428,18 @@ between_covariates <- report_side_by_side(
 
 between_covariates
 
-export_everything <- list()
-
 export_everything$between_covariates <- between_covariates
 
 ```
 
+## Introcuding remaining control variables one by one
 
+Within-person variables - Sup_agent_cw, sup_target_cw - time_spent_cw all make a difference to the results. 
 
+Given that some results change, we do it separately for support and time
+spent.
 
-
-
-## Social Exchange Processes Covariates
+## Time Spent
 
 ### Positive Affect - Target
 
@@ -826,50 +1451,9 @@ posaff_target <- lme(
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
       
-      # Daily social exchange processes
-      Sup_agent_cw +Sup_target_cw +
-      time_spent_cw + 
-      Sup_agent_cb +Sup_target_cb +
-      time_spent_cb
-      
-      # time-invariant covariates
-
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      #intention_agent_lagged_cw + 
-      #self_efficacy_agent_lagged_cw + 
-      #plan_agent_lagged_cw + 
-      #risk_perception_agent_cw +
-      #perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      #intention_target_lagged_cw + 
-      #self_efficacy_target_lagged_cw + 
-      #plan_target_lagged_cw + 
-      #risk_perception_target_cw +
-      #perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      #intention_agent_lagged_cb + 
-      #self_efficacy_agent_lagged_cb + 
-      #plan_agent_lagged_cb + 
-      #risk_perception_agent_cb +
-      #perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      #intention_target_lagged_cb + 
-      #self_efficacy_target_lagged_cb + 
-      #plan_target_lagged_cb + 
-      #risk_perception_target_cb +
-      #perceived_benfeits_target_cb
-      
-      , data = as.data.frame(df),
+      #Sup_agent_cw +Sup_target_cw +
+      time_spent_cw,
+    data = as.data.frame(df),
     random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
     #correlation = corAR1(form = ~ 1 | CoupleID),
     na.action = na.omit,
@@ -891,51 +1475,9 @@ negaff_target <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-  
-    # Daily social exchange processes
-      Sup_agent_cw +Sup_target_cw +
-      time_spent_cw + 
-      Sup_agent_cb +Sup_target_cb +
-      time_spent_cb
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      #intention_agent_lagged_cw + 
-      #self_efficacy_agent_lagged_cw + 
-      #plan_agent_lagged_cw + 
-      #risk_perception_agent_cw +
-      #perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      #intention_target_lagged_cw + 
-      #self_efficacy_target_lagged_cw + 
-      #plan_target_lagged_cw + 
-      #risk_perception_target_cw +
-      #perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      #intention_agent_lagged_cb + 
-      #self_efficacy_agent_lagged_cb + 
-      #plan_agent_lagged_cb + 
-      #risk_perception_agent_cb +
-      #perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      #intention_target_lagged_cb + 
-      #self_efficacy_target_lagged_cb + 
-      #plan_target_lagged_cb + 
-      #risk_perception_target_cb +
-      #perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+    #Sup_agent_cw +Sup_target_cw +
+    time_spent_cw,
+  data = as.data.frame(df),
   random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
   #correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -957,54 +1499,16 @@ mvpa_target <- glmmTMB(
     PSC_agent_cb + NSC_agent_cb + 
     sbwwear_cw + sbwwear_cb + 
     
-        # Daily social exchange processes
-      Sup_agent_cw +Sup_target_cw +
-      time_spent_cw + 
-      Sup_agent_cb +Sup_target_cb +
-      time_spent_cb +
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      #intention_agent_lagged_cw + 
-      #self_efficacy_agent_lagged_cw + 
-      #plan_agent_lagged_cw + 
-      #risk_perception_agent_cw +
-      #perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      #intention_target_lagged_cw + 
-      #self_efficacy_target_lagged_cw + 
-      #plan_target_lagged_cw + 
-      #risk_perception_target_cw +
-      #perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      #intention_agent_lagged_cb + 
-      #self_efficacy_agent_lagged_cb + 
-      #plan_agent_lagged_cb + 
-      #risk_perception_agent_cb +
-      #perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      #intention_target_lagged_cb + 
-      #self_efficacy_target_lagged_cb + 
-      #plan_target_lagged_cb + 
-      #risk_perception_target_cb +
-      #perceived_benfeits_target_cb +
-
+    #Sup_agent_cw + Sup_target_cw +
+    time_spent_cw +
+    
     (1 + PSC_agent_cw + NSC_agent_cw | CoupleID) +
     ar1(factor(sbyday) - 1 | CoupleID),
     family = nbinom1,
     data = df,
-    control = glmmTMBControl(optArgs = list(iter.max = 1e4, eval.max = 1e4))
+    control = glmmTMBControl(optimizer = nlminb, 
+                             optArgs = list(iter.max = 1e4, 
+                                            eval.max = 1e4))
 )
 check_singularity(mvpa_target)
 
@@ -1018,51 +1522,9 @@ posaff_agent <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-    
-        # Daily social exchange processes
-      Sup_agent_cw +Sup_target_cw +
-      time_spent_cw + 
-      Sup_agent_cb +Sup_target_cb +
-      time_spent_cb
-    
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      #intention_agent_lagged_cw + 
-      #self_efficacy_agent_lagged_cw + 
-      #plan_agent_lagged_cw + 
-      #risk_perception_agent_cw +
-      #perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      #intention_target_lagged_cw + 
-      #self_efficacy_target_lagged_cw + 
-      #plan_target_lagged_cw + 
-      #risk_perception_target_cw +
-      #perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      #intention_agent_lagged_cb + 
-      #self_efficacy_agent_lagged_cb + 
-      #plan_agent_lagged_cb + 
-      #risk_perception_agent_cb +
-      #perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      #intention_target_lagged_cb + 
-      #self_efficacy_target_lagged_cb + 
-      #plan_target_lagged_cb + 
-      #risk_perception_target_cb +
-      #perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+    #Sup_agent_cw +Sup_target_cw +
+    time_spent_cw,
+  data = as.data.frame(df),
   random = ~ NSC_agent_cw + PSC_agent_cw | CoupleID,
   correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -1082,50 +1544,9 @@ negaff_agent <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-    
-        # Daily social exchange processes
-      Sup_agent_cw +Sup_target_cw +
-      time_spent_cw + 
-      Sup_agent_cb +Sup_target_cb +
-      time_spent_cb
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      #intention_agent_lagged_cw + 
-      #self_efficacy_agent_lagged_cw + 
-      #plan_agent_lagged_cw + 
-      #risk_perception_agent_cw +
-      #perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      #intention_target_lagged_cw + 
-      #self_efficacy_target_lagged_cw + 
-      #plan_target_lagged_cw + 
-      #risk_perception_target_cw +
-      #perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      #intention_agent_lagged_cb + 
-      #self_efficacy_agent_lagged_cb + 
-      #plan_agent_lagged_cb + 
-      #risk_perception_agent_cb +
-      #perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      #intention_target_lagged_cb + 
-      #self_efficacy_target_lagged_cb + 
-      #plan_target_lagged_cb + 
-      #risk_perception_target_cb +
-      #perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+    #Sup_agent_cw +Sup_target_cw +
+    time_spent_cw,
+  data = as.data.frame(df),
   random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
   #correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -1146,49 +1567,8 @@ mvpa_partner <- glmmTMB(
       PSC_agent_cb + NSC_agent_cb + 
       pbwwear_cw + pbwwear_cb + 
       
-      # Daily social exchange processes
-      Sup_agent_cw +Sup_target_cw +
-      time_spent_cw + 
-      Sup_agent_cb +Sup_target_cb +
-      time_spent_cb +
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      #intention_agent_lagged_cw + 
-      #self_efficacy_agent_lagged_cw + 
-      #plan_agent_lagged_cw + 
-      #risk_perception_agent_cw +
-      #perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      #intention_target_lagged_cw + 
-      #self_efficacy_target_lagged_cw + 
-      #plan_target_lagged_cw + 
-      #risk_perception_target_cw +
-      #perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      #intention_agent_lagged_cb + 
-      #self_efficacy_agent_lagged_cb + 
-      #plan_agent_lagged_cb + 
-      #risk_perception_agent_cb +
-      #perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      #intention_target_lagged_cb + 
-      #self_efficacy_target_lagged_cb + 
-      #plan_target_lagged_cb + 
-      #risk_perception_target_cb +
-      #perceived_benfeits_target_cb +
+      #Sup_agent_cw +Sup_target_cw +
+      time_spent_cw +
       
       (1 + PSC_agent_cw | CoupleID),
     family = nbinom1,
@@ -1203,7 +1583,7 @@ check_singularity(mvpa_partner)
 ### Rerporting the results side by side
 
 ```{r}
-social_exchange_processes_covariates <- report_side_by_side(
+time_spent <- report_side_by_side(
   models = list(
     posaff_agent, posaff_target, 
     negaff_agent, negaff_target,
@@ -1216,72 +1596,21 @@ social_exchange_processes_covariates <- report_side_by_side(
     'MVPA Agent', 'MVPA Target'
   )
 )
+time_spent
 
-between_covariates
+export_everything$time_spent <- time_spent
 
-export_everything$social_exchange_processes_covariates <- social_exchange_processes_covariates
+```
+
+```{r}
+
+mvpa_target_time_spent <- mvpa_target
 
 ```
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Individual level covariates
+## Only support provided by AGENT
 
 ### Positive Affect - Target
 
@@ -1293,49 +1622,8 @@ posaff_target <- lme(
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
       
-      # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      intention_agent_lagged_cw + 
-      self_efficacy_agent_lagged_cw + 
-      plan_agent_lagged_cw + 
-      risk_perception_agent_cw +
-      perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      intention_target_lagged_cw + 
-      self_efficacy_target_lagged_cw + 
-      plan_target_lagged_cw + 
-      risk_perception_target_cw +
-      perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      intention_agent_lagged_cb + 
-      self_efficacy_agent_lagged_cb + 
-      plan_agent_lagged_cb + 
-      risk_perception_agent_cb +
-      perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      intention_target_lagged_cb + 
-      self_efficacy_target_lagged_cb + 
-      plan_target_lagged_cb + 
-      risk_perception_target_cb +
-      perceived_benfeits_target_cb
-      
-      , data = as.data.frame(df),
+      Sup_agent_cw,
+    data = as.data.frame(df),
     random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
     #correlation = corAR1(form = ~ 1 | CoupleID),
     na.action = na.omit,
@@ -1357,49 +1645,8 @@ negaff_target <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-  
-    # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      intention_agent_lagged_cw + 
-      self_efficacy_agent_lagged_cw + 
-      plan_agent_lagged_cw + 
-      risk_perception_agent_cw +
-      perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      intention_target_lagged_cw + 
-      self_efficacy_target_lagged_cw + 
-      plan_target_lagged_cw + 
-      risk_perception_target_cw +
-      perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      intention_agent_lagged_cb + 
-      self_efficacy_agent_lagged_cb + 
-      plan_agent_lagged_cb + 
-      risk_perception_agent_cb +
-      perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      intention_target_lagged_cb + 
-      self_efficacy_target_lagged_cb + 
-      plan_target_lagged_cb + 
-      risk_perception_target_cb +
-      perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+    Sup_agent_cw,
+  data = as.data.frame(df),
   random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
   #correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -1413,6 +1660,9 @@ check_singularity(negaff_target)
 
 ### MVPA - Target
 
+In order to achieve convergence, random effects for support had to be
+added.
+
 ```{r}
 mvpa_target <- glmmTMB(
   sbwmvpa01 ~
@@ -1421,53 +1671,15 @@ mvpa_target <- glmmTMB(
     PSC_agent_cb + NSC_agent_cb + 
     sbwwear_cw + sbwwear_cb + 
     
-        # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      intention_agent_lagged_cw + 
-      self_efficacy_agent_lagged_cw + 
-      plan_agent_lagged_cw + 
-      risk_perception_agent_cw +
-      perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      intention_target_lagged_cw + 
-      self_efficacy_target_lagged_cw + 
-      plan_target_lagged_cw + 
-      risk_perception_target_cw +
-      perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      intention_agent_lagged_cb + 
-      self_efficacy_agent_lagged_cb + 
-      plan_agent_lagged_cb + 
-      risk_perception_agent_cb +
-      perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      intention_target_lagged_cb + 
-      self_efficacy_target_lagged_cb + 
-      plan_target_lagged_cb + 
-      risk_perception_target_cb +
-      perceived_benfeits_target_cb +
-
-    (1 + PSC_agent_cw + NSC_agent_cw | CoupleID) +
+    Sup_agent_cw +
+    
+    (1 + PSC_agent_cw + NSC_agent_cw + Sup_agent_cw | CoupleID) +
     ar1(factor(sbyday) - 1 | CoupleID),
     family = nbinom1,
     data = df,
-    control = glmmTMBControl(optArgs = list(iter.max = 1e4, eval.max = 1e4))
+    control = glmmTMBControl(optimizer = nlminb, 
+                             optArgs = list(iter.max = 1e4, 
+                                            eval.max = 1e4))
 )
 check_singularity(mvpa_target)
 
@@ -1481,49 +1693,8 @@ posaff_agent <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-    
-        # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      intention_agent_lagged_cw + 
-      self_efficacy_agent_lagged_cw + 
-      plan_agent_lagged_cw + 
-      risk_perception_agent_cw +
-      perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      intention_target_lagged_cw + 
-      self_efficacy_target_lagged_cw + 
-      plan_target_lagged_cw + 
-      risk_perception_target_cw +
-      perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      intention_agent_lagged_cb + 
-      self_efficacy_agent_lagged_cb + 
-      plan_agent_lagged_cb + 
-      risk_perception_agent_cb +
-      perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      intention_target_lagged_cb + 
-      self_efficacy_target_lagged_cb + 
-      plan_target_lagged_cb + 
-      risk_perception_target_cb +
-      perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+    Sup_agent_cw,
+  data = as.data.frame(df),
   random = ~ NSC_agent_cw + PSC_agent_cw | CoupleID,
   correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -1543,49 +1714,8 @@ negaff_agent <- lme(
         PSC_agent_cw + NSC_agent_cw +
         sbyday + weeknd2 +
         PSC_agent_cb + NSC_agent_cb +
-    
-        # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
-      
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-            # individual covariates agent Within
-      intention_agent_lagged_cw + 
-      self_efficacy_agent_lagged_cw + 
-      plan_agent_lagged_cw + 
-      risk_perception_agent_cw +
-      perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      intention_target_lagged_cw + 
-      self_efficacy_target_lagged_cw + 
-      plan_target_lagged_cw + 
-      risk_perception_target_cw +
-      perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      intention_agent_lagged_cb + 
-      self_efficacy_agent_lagged_cb + 
-      plan_agent_lagged_cb + 
-      risk_perception_agent_cb +
-      perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      intention_target_lagged_cb + 
-      self_efficacy_target_lagged_cb + 
-      plan_target_lagged_cb + 
-      risk_perception_target_cb +
-      perceived_benfeits_target_cb
-  , data = as.data.frame(df),
+    Sup_agent_cw,
+  data = as.data.frame(df),
   random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
   #correlation = corAR1(form = ~ 1 | CoupleID),
   na.action = na.omit,
@@ -1598,6 +1728,8 @@ check_singularity(negaff_agent)
 
 ### MVPA - Agent
 
+in Order to achieve convergence, the random slopes had to be taken out.
+
 ```{r}
 mvpa_partner <- glmmTMB(
     pbwmvpa01 ~
@@ -1606,49 +1738,9 @@ mvpa_partner <- glmmTMB(
       PSC_agent_cb + NSC_agent_cb + 
       pbwwear_cw + pbwwear_cb + 
       
-      # Daily social exchange processes
-      #Sup_agent_cw +Sup_target_cw +
-      #time_spent_cw,
+      Sup_agent_cw +
       
-      # time-invariant covariates
-      #Sup_agent_cb +Sup_target_cb +
-      #time_spent_cb + 
-      #group +
-      #reldur_cb + 
-      #sage +
-      #sbmi +
-      #sb0sex01 +
-      #sb0kih01
-      
-      # individual covariates agent Within
-      intention_agent_lagged_cw + 
-      self_efficacy_agent_lagged_cw + 
-      plan_agent_lagged_cw + 
-      risk_perception_agent_cw +
-      perceived_benfeits_agent_cw +
-      
-      # individual covariates target Within
-      intention_target_lagged_cw + 
-      self_efficacy_target_lagged_cw + 
-      plan_target_lagged_cw + 
-      risk_perception_target_cw +
-      perceived_benfeits_target_cw +
-      
-      # individual covariates agent Between
-      intention_agent_lagged_cb + 
-      self_efficacy_agent_lagged_cb + 
-      plan_agent_lagged_cb + 
-      risk_perception_agent_cb +
-      perceived_benfeits_agent_cb +
-      
-      # individual covariates target Between
-      intention_target_lagged_cb + 
-      self_efficacy_target_lagged_cb + 
-      plan_target_lagged_cb + 
-      risk_perception_target_cb +
-      perceived_benfeits_target_cb +
-      
-      (1 + PSC_agent_cw | CoupleID),
+      (1  | CoupleID),
     family = nbinom1,
     data = df,
     control = glmmTMBControl(optimizer = nlminb, 
@@ -1661,7 +1753,7 @@ check_singularity(mvpa_partner)
 ### Rerporting the results side by side
 
 ```{r}
-individual_covariates <- report_side_by_side(
+support_agent <- report_side_by_side(
   models = list(
     posaff_agent, posaff_target, 
     negaff_agent, negaff_target,
@@ -1674,25 +1766,200 @@ individual_covariates <- report_side_by_side(
     'MVPA Agent', 'MVPA Target'
   )
 )
+support_agent
 
-between_covariates
-
-export_everything$individual_covariates <- individual_covariates
+export_everything$support_agent <- support_agent
 
 ```
-
-
-
-
-
 
 ```{r}
 
-writexl::write_xlsx(export_everything, 'o4_SensitivityAnalysesRaw.xlsx')
+mvpa_target_support_agent <- mvpa_target
+
+```
+
+## Only support provided by TARGET
+
+### Positive Affect - Target
+
+```{r}
+
+posaff_target <- lme(
+    fixed = Paff_target~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb +
+      
+      Sup_target_cw,
+    data = as.data.frame(df),
+    random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+    #correlation = corAR1(form = ~ 1 | CoupleID),
+    na.action = na.omit,
+    control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+
+check_singularity(posaff_target)
+
+```
+
+### Negative Affect - Target
+
+```{r}
+
+negaff_target <- lme(
+  fixed = Naff_target ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb +
+    Sup_target_cw,
+  data = as.data.frame(df),
+  random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+  #correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+
+check_singularity(negaff_target)
+```
+
+### MVPA - Target
+
+In order to achieve convergence, NSC random slope had to be removed.
+
+```{r}
+mvpa_target <- glmmTMB(
+  sbwmvpa01 ~
+    PSC_agent_cw + NSC_agent_cw +
+    sbyday + weeknd2 +
+    PSC_agent_cb + NSC_agent_cb + 
+    sbwwear_cw + sbwwear_cb + 
+    
+    Sup_target_cw +
+    
+    (1 + PSC_agent_cw | CoupleID) +
+    ar1(factor(sbyday) - 1 | CoupleID),
+    family = nbinom1,
+    data = df,
+    control = glmmTMBControl(optimizer = nlminb, 
+                             optArgs = list(iter.max = 1e4, 
+                                            eval.max = 1e4))
+)
+check_singularity(mvpa_target)
+
+```
+
+### Positive affect - Agent
+
+```{r}
+posaff_agent <- lme(
+  fixed = Paff_agent ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb +
+    Sup_target_cw,
+  data = as.data.frame(df),
+  random = ~ NSC_agent_cw + PSC_agent_cw | CoupleID,
+  correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                      maxIter = 1e4,
+                      msMaxEval = 1e4)
+)
+check_singularity(posaff_agent)
+```
+
+### Negative Affect - Agent
+
+```{r}
+
+negaff_agent <- lme(
+  fixed = Naff_agent ~
+        PSC_agent_cw + NSC_agent_cw +
+        sbyday + weeknd2 +
+        PSC_agent_cb + NSC_agent_cb +
+    Sup_target_cw,
+  data = as.data.frame(df),
+  random = ~ PSC_agent_cw + NSC_agent_cw | CoupleID,
+  #correlation = corAR1(form = ~ 1 | CoupleID),
+  na.action = na.omit,
+  control = lmeControl(opt='optim',
+                         maxIter = 1e4,
+                         msMaxEval = 1e4)
+)
+check_singularity(negaff_agent)
+```
+
+### MVPA - Agent
+
+in Order to achieve convergence, the random slope for PSC had to be
+taken out.
+
+```{r}
+mvpa_partner <- glmmTMB(
+    pbwmvpa01 ~
+      PSC_agent_cw + NSC_agent_cw +
+      sbyday + weeknd2 +
+      PSC_agent_cb + NSC_agent_cb + 
+      pbwwear_cw + pbwwear_cb + 
+      
+      Sup_target_cw +
+      
+      (1 + PSC_agent_cw  | CoupleID),
+    family = nbinom1,
+    data = df,
+    control = glmmTMBControl(optimizer = nlminb, 
+                             optArgs = list(iter.max = 1e4, 
+                                            eval.max = 1e4))
+)
+check_singularity(mvpa_partner)
+```
+
+### Rerporting the results side by side
+
+```{r}
+
+support_target <- report_side_by_side(
+  models = list(
+    posaff_agent, posaff_target, 
+    negaff_agent, negaff_target,
+    mvpa_partner, mvpa_target
+  ),
+  order <- order_sens,
+  model_names = list(
+    'Posaff Agent', 'Posaff Target', 
+    'Negaff Agent', 'Negaff Target', 
+    'MVPA Agent', 'MVPA Target'
+  )
+)
+support_target
+
+export_everything$support_target <- support_target
+
+```
+
+# Comparing R squared of models for Target's MVPA to understand why effects change
+
+```{r}
+
+performance::compare_performance(
+  mvpa_target_original,
+  mvpa_target_time_spent,
+  mvpa_target_support_agent
+)
 
 
 ```
 
+```{r}
+
+writexl::write_xlsx(export_everything, 'All_models_raw_main.xlsx')
+
+
+```
 
 # References (Packages) and System information
 
@@ -1701,12 +1968,12 @@ report::report_system()
 
 ```
 
-```{r results='asis'}
+```{r results = 'asis'}
 report::report_packages()
 
 ```
 
-```{r results='asis'}
+```{r results = 'asis'}
 report::cite_packages()
 
 ```
