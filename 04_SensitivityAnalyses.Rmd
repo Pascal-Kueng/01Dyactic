@@ -359,7 +359,7 @@ report_side_by_side <- function(models, order, model_names) {
     rownames(rep) <- order
     
     rep$CI <- ifelse(is.na(rep$CI_low), NA,
-      paste0('[', format(rep$CI_low, nsmall=2), ', ', format(rep$CI_low, nsmall=2), ']')
+      paste0('[', format(rep$CI_low, nsmall=2), ', ', format(rep$CI_high, nsmall=2), ']')
     )
     
     rep <- rep[ , c('Coefficient', 'CI')]
