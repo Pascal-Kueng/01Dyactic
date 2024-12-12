@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.4.1",
+    "Version": "4.4.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -414,7 +414,7 @@
       "Requirements": [
         "R"
       ],
-      "Hash": "55889eaae302ee5b1a4294c66ee8c2be"
+      "Hash": "efcf693c94840695655097774782458a"
     },
     "bayestestR": {
       "Package": "bayestestR",
@@ -3988,13 +3988,12 @@
       "RemoteUsername": "Pascal-Kueng",
       "RemoteSha": "2d2eb929f9876503d2be6ed020070afbbcb77ac8",
       "Requirements": [
-        "R",
         "httr",
         "methods",
         "remotes",
         "writexl"
       ],
-      "Hash": "b7e50cd690f7c9a7991f572dfb5ba21e"
+      "Hash": "e4843473a0dc11ab539174af29beee10"
     },
     "whisker": {
       "Package": "whisker",
